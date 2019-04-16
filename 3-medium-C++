@@ -1,0 +1,21 @@
+# My answer
+
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int n=s.length(), ans=0, i=0, j=0;
+        map<char,int> hashMap;
+        for (int j=0, i=0; j<n; j++)
+        {
+            if (hashMap.find(s[j])!=hashMap.end())
+            {
+                i=max(hashMap[s[j]], i);
+            }
+            ans = max(ans, j-i+1);
+            hashMap[s[j]]=j+1;
+        }
+        return ans;
+    }
+};
+
+When I attempt to use hash_map, I get an error about "hash_map has not been declared", without ability to fix it.
