@@ -1,0 +1,40 @@
+#My answer
+
+class Solution {
+public:
+    int lengthOfLastWord(string s) {
+        if (s=="") return 0;
+        int start, end;
+        for (end=s.size()-1; end>=0; --end)
+        {
+            if (s[end]!=' ') break;
+        }
+        if (end<0) return 0;
+        for (start=end-1; start>=0; --start)
+        {
+            if (s[start]==' ') break;          
+        }
+        return end-start;
+    }
+};
+
+It reaches a 50+% time efficiency and a 60+% space efficiency.
+
+#An improvement -- from for() to while()
+
+class Solution {
+public:
+    int lengthOfLastWord(string s) {
+        if (s=="") return 0;
+        int end=s.size()-1;
+        while (end>=0 && s[end]==' ') --end;
+        if (end<0) return 0;
+        int start=end-1;
+        while (start>=0 && s[start]!=' ') --start;
+        return end-start;
+    }
+};
+
+It reaches a 87% time efficiency and a 86% space efficiency.
+
+And you also should know an '--end' is much faster than 'end--'.
