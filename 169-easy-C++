@@ -69,11 +69,11 @@ class Solution {
 public:
     int majorityElement(vector<int>& nums) {
         stack<int> stk;
-        for (vector<int>::iterator it=nums.begin(); it!=nums.end(); ++it)
+        for (vector<int>::iterator it=nums.begin(); it!=nums.end(); ++it) //iterator的初始化和遍历写法。
         {
             if (stk.empty()||stk.top()==*it)
             {
-                stk.push(*it);
+                stk.push(*it); //iterator是指针，需要取*。
             }
             else
             {
