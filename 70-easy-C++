@@ -1,0 +1,107 @@
+#my answer
+
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n==1) return 1;
+        if (n==2) return 2;
+        int first=1, second=2, i=n-2;
+        while (i-->0)
+        {
+            int third=first+second;
+            first=second;
+            second=third;
+        }
+        return second;
+    }
+};
+
+执行用时 :4 ms, 在所有 C++ 提交中击败了74.55%的用户
+内存消耗 :8.1 MB, 在所有 C++ 提交中击败了93.80%的用户
+
+#error code
+
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n==1) return 1;
+        if (n==2) return 2;
+        return climbStairs(n-1)+climbStairs(n-2);
+    }
+};
+got a runtime error.
+
+add     if (n==3) return 3;
+        if (n==4) return 5;
+        if (n==5) return 8;
+still got a runtime error.        
+
+#reference
+https://leetcode-cn.com/problems/climbing-stairs/solution/pa-lou-ti-by-leetcode
+
+1.暴力法
+时间复杂度：O(2^n)，树形递归的大小为 2^n。
+空间复杂度：O(n)，递归树的深度可以达到 n。
+
+2.方法二：记忆化递归
+在上一种方法中，我们计算每一步的结果时出现了冗余。另一种思路是，我们可以把每一步的结果存储在 memo 数组之中，每当函数再次被调用，我们就直接从 memo 数组返回结果。
+在 memo 数组的帮助下，我们得到了一个修复的递归树，其大小减少到 n。
+时间复杂度：O(n)，树形递归的大小可以达到 n。
+空间复杂度：O(n)，递归树的深度可以达到 n。
+
+3.动态规划
+令 dp[i] 表示能到达第 i 阶的方法总数：dp[i]=dp[i-1]+dp[i-2]
+JAVA代码：
+public class Solution {
+    public int climbStairs(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        int[] dp = new int[n + 1];
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+}
+时间复杂度：O(n)，单循环到 n 。
+空间复杂度：O(n)，dp 数组用了 n 的空间。
+
+4.斐波那契数
+比第三种方法节约了数组的空间，采用常数个变量。
+JAVA代码：
+public class Solution {
+    public int climbStairs(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        int first = 1;
+        int second = 2;
+        for (int i = 3; i <= n; i++) {
+            int third = first + second;
+            first = second;
+            second = third;
+        }
+        return second;
+    }
+}
+时间复杂度：O(n)，单循环到 n ，需要计算第 n 个斐波那契数。
+空间复杂度：O(n)，使用常量级空间。
+
+5.Binets 方法
+看不懂
+
+6.斐波那契公式
+JAVA代码：
+public class Solution {
+    public int climbStairs(int n) {
+        double sqrt5=Math.sqrt(5);
+        double fibn=Math.pow((1+sqrt5)/2,n+1)-Math.pow((1-sqrt5)/2,n+1);
+        return (int)(fibn/sqrt5);
+    }
+}
+时间复杂度：O(log(n))，pow 方法将会用去 log(n) 的时间。
+空间复杂度：O(1)，使用常量级空间。
+注：此斐波那契递推式在量级过大时会出现误差。
