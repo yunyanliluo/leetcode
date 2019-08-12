@@ -25,23 +25,9 @@ public:
 执行用时 :20 ms, 在所有 C++ 提交中击败了93.49%的用户
 内存消耗 :11.1 MB, 在所有 C++ 提交中击败了76.48%的用户
 
-2.先排序，再取最中间一个数。
-class Solution {
-public:
-    int majorityElement(vector<int>& nums) {
-        sort(nums.begin(), nums.end());
-        return nums[nums.size()/2];
-    }
-};
+2.使用一个栈，当栈空或者栈顶元素等于当前遍历数组元素，入栈，若不等则出栈，最后的栈顶元素便是所求解。
+与方法1思路一样，但是时间和空间复杂度均增加。
 
-执行用时 :32 ms, 在所有 C++ 提交中击败了54.79%的用户
-内存消耗 :10.9 MB, 在所有 C++ 提交中击败了92.68%的用户【内存消耗最小】
-
-#error code
-之前的代码错误原因在return一行写成了：
-return nums[(nums.size()+1)/2]; //nums的数组下标是从0至nums.size()-1，而不是1~nums.size()
-
-3.使用一个栈，当栈空或者栈顶元素等于当前遍历数组元素，入栈，若不等则出栈，最后的栈顶元素便是所求解。
 class Solution {
 public:
     int majorityElement(vector<int>& nums) {
@@ -86,3 +72,20 @@ public:
 
 执行用时 :24 ms, 在所有 C++ 提交中击败了81.79%的用户
 内存消耗 :11.6 MB, 在所有 C++ 提交中击败了5.08%的用户
+
+3.先排序，再取最中间一个数。
+class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        return nums[nums.size()/2];
+    }
+};
+
+执行用时 :32 ms, 在所有 C++ 提交中击败了54.79%的用户
+内存消耗 :10.9 MB, 在所有 C++ 提交中击败了92.68%的用户【内存消耗最小】
+
+#error code
+之前的代码错误原因在return一行写成了：
+return nums[(nums.size()+1)/2]; //nums的数组下标是从0至nums.size()-1，而不是1~nums.size()
+
