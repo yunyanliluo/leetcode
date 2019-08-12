@@ -1,0 +1,64 @@
+#my answer
+
+class Solution {
+public:
+    int mySqrt(int x) {
+        if (x==0||x==1) return x;
+        int first=1, last=x/2;
+        while (first<last)
+        {
+            int mid=(first+last+1)/2;
+            if (mid>46340||mid*mid>x)
+            {
+                last=mid-1;
+            }
+            else
+            {
+                first=mid;
+            }
+        }
+        return last;
+    }
+};
+
+#error code
+
+之前的代码产生了爆栈：
+class Solution {
+public:
+    int mySqrt(int x) {
+        if (x==0||x==1) return x;
+        int first=1, last=x/2;
+        while (first<last)
+        {
+            int mid=(first+last+1)/2;
+            if (mid * mid == x) return mid; //这里，当输入x过大，mid*mid大于int数值
+            else if (mid*mid>x) //这里，当输入x过大，mid*mid也大于int数值
+            {
+                last=mid-1;
+            }
+            else
+            {
+                first=mid;
+            }
+        }
+        return last;
+    }
+};
+
+“执行结果：执行出错
+Line 10: Char 20: runtime error: signed integer overflow: 536848900 * 536848900 cannot be represented in type 'int' (solution.cpp)
+最后执行的输入：2147395599”
+第十行“if (mid * mid == x) return mid;”由于mid*mid大于int数值而发生爆栈。
+
+将第十行删去，第十一行改成
+“if (mid*mid>x) //这里，mid*mid也大于int数值
+{
+    last=mid-1;
+}”后依然爆栈。
+
+int范围 -2147483648~2147483647
+通过计算器得到2147483647的算术平方根为46340.95，修改第十一行为if (mid>46340||mid*mid>x)，
+执行用时 :4 ms, 在所有 C++ 提交中击败了90.58%的用户
+内存消耗 :8.3 MB, 在所有 C++ 提交中击败了75.23%的用户
+
