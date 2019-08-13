@@ -1,0 +1,117 @@
+旋转数组，数组长度n，向右k步。
+#my answer
+#soproudthatIwrote58linesofcode
+使用一个temp来存一个数组元素值，然后找到这个位置的新元素值，再找新元素值位置的新元素值，直到某个位置的元素值应该是temp。
+值得注意的是，假若n，k互质，则一次循环便可以遍历整个数组；否则需要最大公约数次循环。
+例如：
+输入：
+[1,2,3,4,5,6]
+2
+输出：
+[5,2,1,4,3,6]
+预期：
+[5,6,1,2,3,4]
+又如：
+输入：
+[1,2,3,4,5,6]
+4
+输出：
+[3,2,5,4,1,6]
+预期：
+[3,4,5,6,1,2]
+
+class Solution {
+public:
+    int hcf(int n, int k){
+        int b=n, m=k, s=n-k; //big, medium, small
+        if (s>m)
+            swap(m, s);
+        while(s!=1)
+        {
+            if (m==s)
+                return m;
+            b=m;
+            m=s;
+            s=b-m;
+            if (s>m)
+                swap(m, s);
+        }
+        return 1;
+    }
+    void rotate(vector<int>& nums, int k) {
+        int n=nums.size();
+        k = k%n;
+        if (k==0) return;
+        if (hcf(n, k)==1) //hcf(n, k)是求最大公约数的函数
+        {
+            int temp=nums[0], i=0;
+            while(1)
+            {
+                int index=(i-k+n)%n;
+                if (index==0)
+                {
+                    nums[i]=temp;
+                    return;
+                }
+                nums[i]=nums[index];
+                i=index;
+            }
+        }
+        else
+        {
+            for (int start=0; start<hcf(n, k); ++start) //need hcf(n, k) times
+            {
+                int temp=nums[start], i=start;
+                while(1)
+                {
+                    int index=(i-k+n)%n;
+                    if (index==start)
+                    {
+                        nums[i]=temp;
+                        break;
+                    }
+                    nums[i]=nums[index];
+                    i=index;
+                }
+            }
+        }
+        return;
+    }
+};
+
+执行用时 :24 ms, 在所有 C++ 提交中击败了86.19%的用户
+内存消耗 :9.4 MB, 在所有 C++ 提交中击败了67.01%的用户
+
+时间复杂度O（n），最大公约数算法是O（n），同时遍历整个数组也是O（n）
+空间复杂度O（1）。
+
+#solutions
+
+方法2.反转数组三次
+#方法链接：https://leetcode-cn.com/problems/two-sum/solution/xuan-zhuan-shu-zu-by-leetcode/
+这个方法基于这个事实：当我们旋转数组 k 次， k%n 个尾部元素会被移动到头部，剩下的元素会被向后移动。
+在这个方法中，我们首先将所有元素反转。然后反转前 k 个元素，再反转后面 n-k 个元素，就能得到想要的结果。
+假设 n=7 且 k=3 。
+原始数组                  : 1 2 3 4 5 6 7
+反转所有数字后             : 7 6 5 4 3 2 1
+反转前 k 个数字后          : 5 6 7 4 3 2 1
+反转后 n-k 个数字后        : 5 6 7 1 2 3 4 --> 结果
+
+#my test code - C++
+class Solution {
+public:
+    void rotate(vector<int>& nums, int k) {
+        k = k%nums.size();
+        if (k==0) return;
+        reverse(nums.begin(),nums.end());
+        reverse(nums.begin(),nums.begin()+k);
+        reverse(nums.begin()+k,nums.end());
+        return;
+    }
+};
+
+执行用时 :20 ms, 在所有 C++ 提交中击败了98.35%的用户
+内存消耗 :9.4 MB, 在所有 C++ 提交中击败了65.81%的用户
+
+时间复杂度O（n），是反转了三次数组的时间。
+空间复杂度O(1) ，没有使用额外的空间。
