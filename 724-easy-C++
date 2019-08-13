@@ -1,0 +1,93 @@
+#my answer
+
+class Solution {
+public:
+    int pivotIndex(vector<int>& nums) {
+        if (nums.size()==0||nums.size()==2) return -1;
+        if (nums.size()==1) return 0;
+        int n=nums.size();
+        vector<long long int> l(n, 0), r(n,0);
+        for (int i=1; i<n; ++i)
+        {
+            l[i]=l[i-1]+nums[i-1];
+        }
+        for (int i=n-2; i>=0; --i)
+        {
+            r[i]=r[i+1]+nums[i+1];
+        }
+        for (int i=0; i<n; ++i)
+            if (l[i]==r[i]) return i;
+        return -1;
+    }
+};
+
+执行用时 :28 ms, 在所有 C++ 提交中击败了84.72%的用户
+内存消耗 :11.7 MB, 在所有 C++ 提交中击败了74.95%的用户
+
+时间复杂度O（n），空间复杂度O（n）。
+
+#solutions
+
+方法2.我的方法的空间优化：设置两个变量left和right，一次遍历求初始right，一次遍历判断left？=right。
+作者：jimmy00745
+链接：https://leetcode-cn.com/problems/two-sum/solution/onde-ji-su-fang-fa-c-python3-by-jimmy00745/
+设置两个变量left和right，一个记录从左边开始的和，一个记录从右边开始的和。
+当遍历的时候，中心索引左边的和即left,中心索引右边的和即right，左边和右边不相等时，遍历进入数组的下一项，left增加一项，right减少一项。
+看代码的话，由两次遍历数组组成。首先需要遍历从第二项到最后一项的和，记录在right里。left是0。此时假定的中心索引为第一项。
+第二次遍历即判断left是否等于right，不相等进入数组的下一项，left需要增加这一项的和，right需要减少下一项的和。
+
+#his code
+class Solution {
+public:
+    int pivotIndex(vector<int>& nums) {
+        if (nums.size() == 0) return -1;
+        int left
+        int right = 0;
+        for (int i=1;i<nums.size();i++){
+            right += nums[i];
+        }
+        for (int i=0;i<nums.size() -1 ;i++){
+            if (right == left) return i;
+            right = right - nums[i+1];
+            left += nums[i];
+        }
+        if (left==right) return nums.size() - 1;
+        else return -1;
+    }
+};
+
+方法3.转化为求解 sunLeft * 2 + nums[p] = sumTotal 
+sumLeft + sumRight + nums[p] = sumTotal;
+sumLeft = sumRight
+可以得出 sumLeft * 2 + nums[p] = sumTotal;
+作者：guo-shuai-yin
+链接：https://leetcode-cn.com/problems/two-sum/solution/zhuan-hua-wei-qiu-jie-sunleft-2-numsp-sumtotal-qiu/
+
+只用变量，大量节约内存消耗
+#my test code - C++
+class Solution {
+public:
+    int pivotIndex(vector<int>& nums) {
+        if (nums.size()==0||nums.size()==2) return -1;
+        if (nums.size()==1) return 0;
+        int n=nums.size();
+        int sumTotal=0, sumLeft=0;
+        for (int i=0; i<n; ++i)
+        {
+            sumTotal+=nums[i];
+        }
+        for (int i=0; i<n; ++i)
+        {
+            if(i!=0)
+                sumLeft+=nums[i-1];
+            if (sumLeft*2+nums[i]==sumTotal)
+                return i;
+        }
+        return -1;
+    }
+};
+
+执行用时 :32 ms, 在所有 C++ 提交中击败了66.04%的用户
+内存消耗 :9.8 MB, 在所有 C++ 提交中击败了87.47%的用户
+
+时间复杂度O（n），空间复杂度O（1）。
