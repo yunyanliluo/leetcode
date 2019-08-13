@@ -1,0 +1,103 @@
+求除自身以外数组元素的乘积，并返回这个解数组。
+
+#solution
+
+1.每个数除自身外所有数的乘积等于左边所有数的乘积乘以右边所有数的乘积
+利用两个数组，一个数组存储每个位置的数左边的所有数的乘积，另一个数组存储每个位置的数右边的所有数的乘积。
+
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+        vector<int> left(nums.size(), 1), right(nums.size(), 1);
+        for (int i=1; i<nums.size(); ++i)
+        {
+            left[i]=left[i-1]*nums[i-1];
+        }
+        for (int i=nums.size()-2; i>=0; --i)
+        {
+            right[i]=right[i+1]*nums[i+1];
+        }
+        vector<int> res(nums.size());
+        for (int i=0; i<nums.size(); ++i)
+        {
+            res[i]=left[i]*right[i];
+        }
+        return res;
+    }
+};
+
+执行用时 :60 ms, 在所有 C++ 提交中击败了72.81%的用户
+内存消耗 :13.1 MB, 在所有 C++ 提交中击败了12.89%的用户
+
+时间复杂度O（n），空间复杂度O（n）。
+
+2.内存优化：只生成左数组，而右数组用变量代替，然后反向更新左数组
+
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+        vector<int> left(nums.size(), 1);
+        int right=1;
+        for (int i=1; i<nums.size(); ++i)
+        {
+            left[i]=left[i-1]*nums[i-1];
+        }
+        for (int i=nums.size()-2; i>=0; --i)
+        {
+            right*=nums[i+1];
+            left[i]=left[i]*right;
+        }
+        return left;
+    }
+};
+
+执行用时 :52 ms, 在所有 C++ 提交中击败了97.71%的用户
+内存消耗 :12.5 MB, 在所有 C++ 提交中击败了64.90%的用户
+
+时间复杂度O（n），空间复杂度O（1）。
+
+#vector的几种初始化及赋值方式
+版权声明：本文为CSDN博主「yjunyu」的原创文章，遵循CC 4.0 by-sa版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/yjunyu/article/details/77728410
+（1）不带参数的构造函数初始化
+//初始化一个size为0的vector
+vector<int> abc;
+2）带参数的构造函数初始化
+//初始化size,但每个元素值为默认值
+vector<int> abc(10);    //初始化了10个默认值为0的元素
+//初始化size,并且设置初始值
+vector<int> cde(10，1);    //初始化了10个值为1的元素
+
+//以下不常用
+3）通过数组地址初始化
+int a[5] = {1,2,3,4,5};
+//通过数组a的地址初始化，注意地址是从0到5（左闭右开区间）
+vector<int> b(a, a+5);
+（4）通过同类型的vector初始化
+vector<int> a(5,1);
+//通过a初始化
+vector<int> b(a);
+（5）通过insert初始化
+//insert初始化方式将同类型的迭代器对应的始末区间（左闭右开区间）内的值插入到vector中
+vector<int> a(6,6);
+vecot<int> b;
+//将a[0]~a[2]插入到b中，b.size()由0变为3
+b.insert(b.begin(), a.begin(), a.begin() + 3);
+
+insert也可通过数组地址区间实现插入:
+int a[6] = {6,6,6,6,6,6};
+vector<int> b;
+//将a的所有元素插入到b中
+b.insert(b.begin(), a, a+7);
+
+此外，insert还可以插入m个值为n的元素
+//在b开始位置处插入6个6
+b.insert(b.begin(), 6, 6);
+（6）通过copy函数赋值
+vector<int> a(5,1);
+int a1[5] = {2,2,2,2,2};
+vector<int> b(10);
+/*将a中元素全部拷贝到b开始的位置中,注意拷贝的区间为a.begin() ~ a.end()的左闭右开的区间*/
+copy(a.begin(), a.end(), b.begin());
+//拷贝区间也可以是数组地址构成的区间
+copy(a1, a1+5, b.begin() + 5);
