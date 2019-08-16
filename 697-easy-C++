@@ -1,0 +1,77 @@
+返回与数组拥有相同度的最短连续子数组的长度。
+度：数组里任一元素出现频数的最大值。
+
+#solutions
+
+#使用unordered_map(原hashmap)存放数组元素数值与一个记录元素出现位置的vector<int>
+
+class Solution {
+public:
+    int findShortestSubArray(vector<int>& nums) {
+        unordered_map<int, vector<int>> numsMap;
+        for (int i=0; i<nums.size(); ++i)
+        {
+            numsMap[nums[i]].push_back(i); //numsMap[nums[i]]是一个vector<int>
+        }
+        int maxDu=0, minLen=nums.size();
+        for (auto it=numsMap.begin(); it!=numsMap.end(); ++it) //unordered_map<int,vector<int>>::iterator it=numsMap.begin()
+        {
+            int tmpDu=it->second.size();
+            if (tmpDu>maxDu)
+            {
+                maxDu=tmpDu;
+                minLen=*(it->second.end()-1)-*(it->second.begin())+1;
+            }
+            else if (tmpDu==maxDu)
+            {
+                int tmpLen=*(it->second.end()-1)-*(it->second.begin())+1;
+                if (tmpLen<minLen)
+                    minLen=tmpLen;
+            }
+        }
+        return minLen;
+    }
+};
+
+执行用时 :40 ms, 在所有 C++ 提交中击败了94.67%的用户
+内存消耗 :15.3 MB, 在所有 C++ 提交中击败了12.36%的用户
+
+#my answer 2
+
+class Solution {
+public:
+    int findShortestSubArray(vector<int>& nums) {
+        int du=0;
+        vector<int> nums1=nums;
+        sort(nums1.begin(),nums1.end());
+        int i, temp=1;
+        int res=nums.size();
+        for (i=0; i<nums1.size(); ++i)
+        {
+            while (i+1<nums1.size()&&nums1[i]==nums1[i+1])
+            {
+                ++i;
+                ++temp;
+            }
+            if (i+1<nums1.size()&&nums1[i]!=nums1[i+1]||i+1==nums1.size())
+            {
+                if (du<=temp)
+                {
+                    vector<int>::iterator first=find(nums.begin(), nums.end(), nums1[i]);
+                    reverse(nums.begin(), nums.end());
+                    vector<int>::iterator last=find(nums.begin(), nums.end(), nums1[i]);
+                    reverse(nums.begin(), nums.end());
+                    last=nums.begin()-last+nums.end()-1;
+                    if (du<temp||last-first+1<res)
+                        res=last-first+1;
+                    du=temp;
+                }
+                temp=1;
+            }
+        }
+        return res;
+    }
+};
+
+执行用时 :696 ms, 在所有 C++ 提交中击败了5.33%的用户
+内存消耗 :12.4 MB, 在所有 C++ 提交中击败了89.89%的用户
