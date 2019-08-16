@@ -1,0 +1,44 @@
+给定一个整数数组，复写0并将其它元素向右平移，超出原长度的元素丢弃。
+
+#solutions
+
+#快慢指针
+
+class Solution {
+public:
+    void duplicateZeros(vector<int>& arr) {
+        int pfast, pslow;
+        for (pfast=0, pslow=0; pfast<arr.size()-1; ++pfast, ++pslow)
+        {
+            if (arr[pslow]==0) ++pfast;
+        }
+        if (pfast==arr.size()-1)
+        {
+            arr[pfast--]=arr[pslow--];
+        }
+        else //pfast>arr.size()-1 && pfast==arr.size()
+        {
+            --pfast;
+            --pslow;
+        }
+        while (pfast>=0)
+        {
+            if (arr[pslow]!=0) 
+            {
+                arr[pfast--]=arr[pslow--];
+            }
+            else
+            {
+                arr[pfast--]=0;
+                arr[pfast--]=0;
+                --pslow;
+            }
+        }
+    }
+};
+
+执行用时 :24 ms, 在所有 C++ 提交中击败了98.35%的用户
+内存消耗 :9.3 MB, 在所有 C++ 提交中击败了100.00%的用户
+
+时间复杂度O(n)
+空间复杂度O(1)
