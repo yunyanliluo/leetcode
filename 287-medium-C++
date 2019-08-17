@@ -1,0 +1,130 @@
+查找长度为n+1的数组里1,2,…,n里面唯一一个重复出现的数值。（可以重复出现很多次，但一定是唯一一个重复出现的数值）
+要求数组不允许修改，时间复杂度小于O（n^2），空间O（1）。
+
+#solutions
+
+方法1.二分查找
+二分查找的时间复杂度为O(logn)
+        
+class Solution {
+public:
+    int findDuplicate(vector<int>& nums) {
+        int n=nums.size()-1;
+        int left=0, right=n;
+        while (left<right)
+        {
+            int mid=left+(right-left)/2;
+            int count=0;
+            for (int i=0; i<n+1; ++i)
+            {
+                if (nums[i]<=mid) ++count;
+            }
+            if (count<=mid)
+            {
+                left=mid+1;
+            }
+            else
+                right=mid;
+        }
+        return left;
+    }
+};
+
+执行用时 :16 ms, 在所有 C++ 提交中击败了65.37%的用户
+内存消耗 :9.9 MB, 在所有 C++ 提交中击败了24.05%的用户
+
+时间复杂度O（nlogn），空间O（1）。
+
+【最佳+trick】方法2.快慢指针
+class Solution {
+public:
+    int findDuplicate(vector<int>& nums) {
+        //快慢指针
+        int tortoise=nums[0], hare=nums[0];
+        do
+        {
+            tortoise=nums[tortoise];
+            hare=nums[nums[hare]];
+        } while(tortoise!=hare);
+        
+        //寻找重复元素
+        int ptr1=nums[0], ptr2=tortoise;
+        while (ptr1!=ptr2)
+        {
+            ptr1=nums[ptr1];
+            ptr2=nums[ptr2];
+        }
+        return ptr1;
+    }
+};
+
+执行用时 :12 ms, 在所有 C++ 提交中击败了89.03%的用户
+内存消耗 :9.9 MB, 在所有 C++ 提交中击败了27.22%的用户
+
+时间复杂度O（n），空间复杂度O（1）。
+
+【不满足题目的数组只读要求】方法3.排序
+如果对数字进行排序，则任何重复的数字都将与排序后的数组相邻。
+链接：https://leetcode-cn.com/problems/two-sum/solution/xun-zhao-zhong-fu-shu-by-leetcode/
+首先，我们对数组进行排序，然后将每个元素与前一个元素进行比较。因为数组中只有一个重复的元素，所以我们知道数组的长度至少为 2，一旦找到重复的元素，我们就可以返回它。
+#java code
+class Solution {
+    public int findDuplicate(vector<int> nums) {
+        Arrays.sort(nums);
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] == nums[i-1]) {
+                return nums[i];
+            }
+        }
+
+        return -1;
+    }
+}
+#my code - C++
+class Solution {
+    public int findDuplicate(vector<int> nums) {
+        sort(nums.begin(), nums.end());
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] == nums[i-1]) {
+                return nums[i];
+            }
+        }
+        return -1;
+    }
+}
+时间复杂度：O(nlgn)。排序调用在 Python 和 Java 中花费 O(nlgn) 时间，因此它支配后续的线性扫描。
+空间复杂度：O(1) (or O(n))，在这里，我们对 nums 进行排序，因此内存大小是恒定的。如果我们不能修改输入数组，那么我们必须为 nums 的副本分配线性空间，并对其进行排序。
+
+【不满足题目的空间要求】方法4.集合
+链接：https://leetcode-cn.com/problems/two-sum/solution/xun-zhao-zhong-fu-shu-by-leetcode/
+如果我们在数组上迭代时存储每个元素，我们可以在数组上迭代时简单地检查每个元素。
+为了实现线性时间复杂性，我们需要能够在恒定时间内将元素插入数据结构（并查找它们）。set 很好地满足这些约束，所以我们迭代数组并将每个元素插入 seen 中。在插入之前，我们检查它是否已经存在。如果是，那么我们找到了我们的副本，所以我们返回它。
+#java code
+class Solution {
+    public int findDuplicate(int[] nums) {
+        Set<Integer> seen = new HashSet<Integer>();
+        for (int num : nums) {
+            if (seen.contains(num)) {
+                return num;
+            }
+            seen.add(num);
+        }
+
+        return -1;
+    }
+}
+#my code -C++
+class Solution {
+    public int findDuplicate(int[] nums) {
+        set<int> seen;
+        for (int i=0; i<nums.size(); ++i) {
+            if (seen.find(nums[i])!=seen.end()) {
+                return num;
+            }
+            seen.insert(nums[i]);
+        }
+        return -1;
+    }
+}
+时间复杂度：O(n)。Python 和 Java 都依赖于底层的哈希表，所以插入和查找有固定的时间复杂度。因此，该算法是线性的，因为它由一个执行 N 次恒定工作的 for 循环组成。
+空间复杂度：O(n)，在最坏的情况下，重复元素出现两次，其中一次出现在数组索引 n-1 处。在这种情况下，seen 将包含 n-1 不同的值，因此将占用 O(n) 空间。
