@@ -116,7 +116,7 @@ class Solution {
 #my code -C++
 class Solution {
     public int findDuplicate(int[] nums) {
-        set<int> seen;
+        unordered_set<int> seen;
         for (int i=0; i<nums.size(); ++i) {
             if (seen.find(nums[i])!=seen.end()) {
                 return num;
