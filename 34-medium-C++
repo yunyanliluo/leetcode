@@ -1,0 +1,39 @@
+在升序数组中查找目标值的起始和终点位置，返回两个下标。
+要求必须是O（logn）时间复杂度。
+
+#my answer
+
+#二分查找
+时间复杂度O（logn），空间复杂度O（1）。
+
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        if (nums.size()==0) //测试用例真的给了空数组！！
+            return {-1,-1};
+        int low=0, high=nums.size()-1;
+        while (low<high)
+        {
+            int mid = low+(high-low)/2;
+            if (nums[mid]<target)
+                low=mid+1;
+            else
+                high=mid;
+        }
+        if (nums[low]==target)
+        {
+            while ((--low)>=0&&nums[low]==nums[low+1])
+                ;
+            ++low;
+            while ((++high)<nums.size()&&nums[high]==nums[high-1])
+                ;
+            --high;
+            return {low,high};
+        }
+        else
+            return {-1,-1};
+    }
+};
+
+执行用时 :8 ms, 在所有 C++ 提交中击败了94.75%的用户
+内存消耗 :10.3 MB, 在所有 C++ 提交中击败了80.67%的用户
