@@ -6,6 +6,7 @@ Best Time to Buy and Sell Stock
 
 #solutions
 #dp
+维护一个辅助数组存储每个元素左边的最小值，然后数组对应位置相减，可以得到每一个数与左边最小数的差值，也就是该天出售股票的最大利润，再找出最大值即可。
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
@@ -31,3 +32,23 @@ public:
 
 执行用时 :12 ms, 在所有 C++ 提交中击败了58.16%的用户
 内存消耗 :9.7 MB, 在所有 C++ 提交中击败了6.41%的用户
+
+#dp
+improvement:一次遍历
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size()==0||prices.size()==1) return 0;
+        int minprice=prices[0], maxprofit=0;
+        for (int i=0; i<prices.size(); ++i)
+        {
+            /*假如当前价格是低谷，那么在最优情况下可能作为买入价格，不可能作为售出价格，两种情况互斥*/
+            if (prices[i]<minprice) minprice=prices[i];
+            else if (prices[i]-minprice>maxprofit) maxprofit=prices[i]-minprice;
+        }
+        return maxprofit;
+    }
+};
+
+执行用时 :8 ms, 在所有 C++ 提交中击败了86.05%的用户
+内存消耗 :9.6 MB, 在所有 C++ 提交中击败了12.39%的用户
