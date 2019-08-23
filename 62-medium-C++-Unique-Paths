@@ -1,0 +1,69 @@
+Unique Paths
+不同路径
+m x n 网格，机器人每次只能向下或者向右移动一步。求从左上角到右下角的不同路径总数。
+
+#my answer
+#dp - 二维数组
+#时间复杂度O（mn），空间复杂度O（mn）
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        if (m*n==0) return m+n;
+        int dp[m][n];
+        for (int i=0; i<m; ++i)
+            dp[i][0]=1;
+        for (int j=0; j<n; ++j)
+            dp[0][j]=1;
+        for (int i=1; i<m; ++i)
+        for (int j=1; j<n; ++j)
+        {
+            dp[i][j]=dp[i-1][j]+dp[i][j-1];
+        }
+        return dp[m-1][n-1];
+    }
+};
+执行用时 :4 ms, 在所有 C++ 提交中击败了75.71%的用户
+内存消耗 :8 MB, 在所有 C++ 提交中击败了89.43%的用户
+
+#dp优化 - 一维数组和变量left
+#时间复杂度O（mn），空间复杂度O（n）
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        if (m*n==0) return m+n;
+        int dp[n];
+        for (int i=0; i<n; ++i) dp[i]=1;//注意：int a[1000] = {0};这种方法如果想把整形数组a都初始化为1就不能用了.比如int a[1000] = {1};数组其实是被初始化成1,0,0,0,0
+        int left;
+        for (int i=1; i<m; ++i)
+        for (int j=1; j<n; ++j)
+        {
+            if (j==1) left=1;
+            dp[j]=dp[j]+left;
+            left=dp[j];
+        }
+        return dp[n-1];
+    }
+};
+执行用时 :0 ms, 在所有 C++ 提交中击败了100.00%的用户
+内存消耗 :8.2 MB, 在所有 C++ 提交中击败了53.69%的用户
+
+#solutions
+#dp优化 - 去掉left，只保留一维数组
+#时间复杂度O（mn），空间复杂度O（n）
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        if (m*n==0) return m+n;
+        int dp[n];
+        for (int i=0; i<n; ++i) dp[i]=1;//注意：int a[1000] = {0};这种方法如果想把整形数组a都初始化为1就不能用了.比如int a[1000] = {1};数组其实是被初始化成1,0,0,0,0
+        for (int i=1; i<m; ++i)
+        for (int j=1; j<n; ++j)
+        {
+            if (j==1) dp[j]+=1;
+            else dp[j]+=dp[j-1];
+        }
+        return dp[n-1];
+    }
+};
+执行用时 :4 ms, 在所有 C++ 提交中击败了75.71%的用户
+内存消耗 :8 MB, 在所有 C++ 提交中击败了87.79%的用户
