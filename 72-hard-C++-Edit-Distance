@@ -1,0 +1,57 @@
+Edit Distance
+编辑距离
+给定两个单词 word1 和 word2，计算出将 word1 转换成 word2 所使用的最少操作数 。你可以对一个单词进行如下三种操作：
+1.插入一个字符
+2.删除一个字符
+3.替换一个字符
+
+示例 1:
+输入: word1 = "horse", word2 = "ros"
+输出: 3
+解释: 
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
+
+示例 2:
+输入: word1 = "intention", word2 = "execution"
+输出: 5
+解释: 
+intention -> inention (删除 't')
+inention -> enention (将 'i' 替换为 'e')
+enention -> exention (将 'n' 替换为 'x')
+exention -> exection (将 'n' 替换为 'c')
+exection -> execution (插入 'u')
+
+#solutions
+#dp
+#时间复杂度O（mn），空间复杂度O（mn）
+链接：https://leetcode-cn.com/problems/edit-distance/solution/bian-ji-ju-chi-by-leetcode/
+D[i][j] 表示 word1 的前 i 个字母和 word2 的前 j 个字母之间的编辑距离。
+如果两个子串的最后一个字母相同，word1[i] = word2[i] 的情况下：D[i][j]=D[i−1][j−1]
+否则，word1[i] != word2[i] 我们将考虑替换最后一个字符使得他们相同：D[i][j]=1+min(D[i−1][j],D[i][j−1],D[i−1][j−1])
+其中，dp[i-1][j-1]到dp[i][j]需要进行替换操作，dp[i-1][j]到d[i][j]需要进行删除操作，dp[i][j-1] 到d[i][j]需要进行添加操作。
+同时，对于边界情况，一个空串和一个非空串的编辑距离为 D[i][0] = i 和 D[0][j] = j。
+#my C++ code
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        int n=word1.length(), m=word2.length();
+        if (n==0) return m;
+        else if (m==0) return n; //可以写成if (m*n==0) return m+n;
+        int dp[n+1][m+1]={0};
+        for (int i=1; i<=n; ++i) dp[i][0]=i;
+        for (int j=1; j<=m; ++j) dp[0][j]=j;
+        for (int i=1; i<=n; ++i)
+        for (int j=1; j<=m; ++j)
+        {
+            if (word1[i-1]==word2[j-1]) //这里dp[i][j]对应的是word1[i-1]和word2[j-1]
+                dp[i][j]=dp[i-1][j-1];
+            else
+                dp[i][j]=min(min(dp[i-1][j],dp[i][j-1]), dp[i-1][j-1])+1;
+        }
+        return dp[n][m];
+    }
+};
+执行用时 :12 ms, 在所有 C++ 提交中击败了94.92%的用户
+内存消耗 :9.7 MB, 在所有 C++ 提交中击败了69.23%的用户
