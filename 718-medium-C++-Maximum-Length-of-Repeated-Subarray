@@ -1,0 +1,42 @@
+Maximum Length of Repeated Subarray
+最长重复子数组
+给两个整数数组 A 和 B ，返回两个数组中公共的、长度最长的子数组的长度。
+示例 1:
+输入:
+A: [1,2,3,2,1]
+B: [3,2,1,4,7]
+输出: 3
+解释: 
+长度最长的公共子数组是 [3, 2, 1]。
+
+#my answer
+#dp - 二维数组
+class Solution {
+public:
+    int findLength(vector<int>& A, vector<int>& B) {
+        int m=A.size(), n=B.size();
+        if (m*n==0) return 0;
+        int f[m][n]; //记得：initial value is not zero
+        int maxslen=0;
+        for (int i=0; i<m; ++i)
+        for (int j=0; j<n; ++j)
+        {
+            if (A[i]==B[j])
+            {
+                if (i==0||j==0)
+                    f[i][j]=1;
+                else
+                    f[i][j]=f[i-1][j-1]+1;
+                maxslen=max(maxslen, f[i][j]);
+            }
+            else
+                f[i][j]=0;
+        }
+        return maxslen;
+    }
+};
+执行用时 :292 ms, 在所有 C++ 提交中击败了64.00%的用户
+内存消耗 :13.2 MB, 在所有 C++ 提交中击败了77.38%的用户
+
+#dp - 一维数组
+使用f[n]存储i-1行n个元素，在更新f[j-1]前使用prev变量存储f[j-1]（原f[i-1][j-1]）。过程如 题。
