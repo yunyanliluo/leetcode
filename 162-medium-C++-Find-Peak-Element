@@ -1,3 +1,5 @@
+Find Peak Element
+寻找峰值
 给一个数组nums，其中 nums[i] ≠ nums[i+1]，返回任一个峰值元素的数组下标。峰值元素是指其值大于左右相邻值的元素。假设 nums[-1] = nums[n] = -∞。
 
 #my answer
