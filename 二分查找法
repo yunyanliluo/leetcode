@@ -1,0 +1,57 @@
+二分查找法
+核心思想：排除法，每一轮循环排除掉一半以上的元素，使用对数时间复杂度把区间收缩到只剩下一个数，把对单个值是否是目标数值的判断留在最后做，甚至有时连最后一步都省去了。
+二分查找的时间复杂度为O(logn),空间复杂度为O（1）。
+
+二分查找法的书写步骤：
+0.分析左右边界，不要漏掉目标值，目标值很可能在边界（边界外侧）。
+1.先写while (left<right)，退出循环的时候一定有left==right，这样返回left和返回right都是一样的。
+2.中位数先写int mid=left+(right-left)/2，等循环里分支的逻辑写完，再回来做调整。
+3.写逻辑上容易想到的一个逻辑分支，通常是排除掉中位数（left/right=mid+1/mid-1）的分支。
+4.循环内只写两个分支，一个分支排除中位数，另一个分支不排除中位数（right/left=mid），循环中不单独对中位数做判断。
+5.根据分支逻辑选择中位数的类型（左中位数、右中位数），选择的标准是避免死循环：看左边界是否收缩，假如left=mid左边界不收缩，就应该改成右中位数：int mid=left+(right-left+1)/2。
+6.退出循环的时候可能需要对“夹逼”剩下的那个数单独做一次判断，这一步称之为“后处理”：如果你能确定候选区间里目标元素一定存在，就不必做“后处理”；如果不确定候选区间里目标元素是否存在，就需要在候选区间夹逼成一个数的时候，单独判断一下这个数是不是目标数，如果不是，返回-1（无解）。
+
+注：取中位数应避免整型溢出
+left+right在整型溢出之后会变成负数，此时如果除以2，mid是一个负数。
+最好的写法：int mid=left+(right-left)/2; /*非数组下标的情况下：在right极大和left为负数的情况下也可能产生溢出*/
+另一种写法（Java）：int mid=(left+right)>>>1; /*在无符号右移之后可以得到在不溢出的情况下正确的结果。在Java及JavaScript中提供了无符号右移操作符“>>>”，但是在C++中只提供了无符号数右移/带符号数算术右移操作符“>>”，因此可以先转换为无符号数，再进行无符号右移>>*/
+
+二分查找的代码模板：
+选取中位数有以下两种情况：
+（1）左中位数
+//int left=0, right=nums.size()-1;
+while (left<right){
+    int mid=left+(right-left)/2 //左中位数
+if(排除中位数的逻辑)
+    	left=mid+1;
+else
+    	right=mid;
+}
+//if (left==target){
+//    return left;
+//}
+//return -1;
+
+（2）右中位数
+//int left=0, right=nums.size()-1;
+while (left<right){
+    int mid=left+(right-left+1)/2 //右中位数
+if(排除中位数的逻辑)
+    	right=mid-1;
+else
+    	left=mid;
+}
+//if (left==target){
+//    return left;
+//}
+//return -1;
+
+参考链接：
+[1]https://leetcode-cn.com/problems/two-sum/solution/xun-zhao-zhong-fu-shu-by-leetcode/
+[2]https://leetcode-cn.com/problems/two-sum/solution/er-fen-fa-si-lu-ji-dai-ma-python-by-liweiwei1419/
+[3]https://leetcode-cn.com/problems/two-sum/solution/kuai-man-zhi-zhen-yuan-li-jian-yi-jie-shi-by-damie/
+[4]https://leetcode-cn.com/problems/search-insert-position/solution/te-bie-hao-yong-de-er-fen-cha-fa-fa-mo-ban-python-/
+
+例题
+287-medium-C++-Find-the-Duplicate-Number
+162-medium-C++-Find-Peak-Element
