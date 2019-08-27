@@ -1,0 +1,50 @@
+Longest Increasing Subsequence
+最长上升子序列
+给定一个无序的整数数组，找到其中最长上升子序列的长度。
+
+示例:
+输入: [10,9,2,5,3,7,101,18]
+输出: 4 
+解释: 最长的上升子序列是 [2,3,7,101]，它的长度是 4。
+
+说明:
+可能会有多种最长上升子序列的组合，你只需要输出对应的长度即可。
+你算法的时间复杂度应该为 O(n2) 。
+进阶: 你能将算法的时间复杂度降低到 O(n log n) 吗?
+
+#solutions
+#dp - O(n^2)
+我们使用 dp 数组来存储所需的数据。 dp[i] 表示考虑到数组元素一直到 i th 的情况下可能的最长上升子序列的长度，必须包括 i th元素。
+为了找出 dp[i]，我们需要尝试在每个可能的最长上升子序列中附加当前元素（nums[i]）到 (i−1) th（包括 (i−1) th )，
+这样通过添加当前元素形成的新序列也是一个上升子序列。因此，我们可以很容易地确定 dp[i] 使用：
+dp[i] = max(dp[j]) + 1, ∀0≤j<i
+最后，确定最终结果的所有 dp[i] 中的最大值。
+LIS_length =max(dp[i]),∀0≤i<n
+
+#C++ code
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n=nums.size();
+        if (n==0) return 0;
+        int maxlen=1;
+        int dp[n];
+        dp[0]=1;
+        for (int i=1; i<n; ++i)
+        {
+            dp[i]=1;
+            for (int j=0; j<i; ++j)
+            {
+                if (nums[j]<nums[i])
+                {
+                    dp[i]=max(dp[i], dp[j]+1);
+                }
+            }
+            maxlen=max(maxlen, dp[i]);
+        }
+        return maxlen;
+    }
+};
+
+执行用时 :112 ms, 在所有 C++ 提交中击败了10.44%的用户
+内存消耗 :8.5 MB, 在所有 C++ 提交中击败了81.12%的用户
