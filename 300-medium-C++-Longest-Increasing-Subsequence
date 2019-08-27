@@ -14,6 +14,7 @@ Longest Increasing Subsequence
 
 #solutions
 #dp - O(n^2)
+#时间复杂度O(n^2)，空间复杂度O（n）
 我们使用 dp 数组来存储所需的数据。 dp[i] 表示考虑到数组元素一直到 i th 的情况下可能的最长上升子序列的长度，必须包括 i th元素。
 为了找出 dp[i]，我们需要尝试在每个可能的最长上升子序列中附加当前元素（nums[i]）到 (i−1) th（包括 (i−1) th )，
 这样通过添加当前元素形成的新序列也是一个上升子序列。因此，我们可以很容易地确定 dp[i] 使用：
@@ -48,3 +49,52 @@ public:
 
 执行用时 :112 ms, 在所有 C++ 提交中击败了10.44%的用户
 内存消耗 :8.5 MB, 在所有 C++ 提交中击败了81.12%的用户
+
+#dp+二分查找
+#时间复杂度O(nlogn)，空间复杂度O（n）
+新建数组 cell，用于保存最长上升子序列。对原序列进行遍历，将每位元素二分插入 cell 中。
+如果 cell 中元素都比它小，将它插到最后；否则，用它覆盖掉比它大的元素中最小的那个。
+总之，思想就是让 cell 中存储比较小的元素。这样，cell 未必是真实的最长上升子序列，但长度是对的。
+链接：https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/zui-chang-shang-sheng-zi-xu-lie-dong-tai-gui-hua-e/
+我们来看下面的例子：
+input: [0, 8, 4, 12, 2]
+dp: [0]
+dp: [0, 8]
+dp: [0, 4]
+dp: [0, 4, 12]
+dp: [0, 2, 12]
+dp:[0，2，12]这不是最长上升子序列，但 dpdp 数组的长度会导致最长上升子序列的长度。
+链接：https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/zui-chang-shang-sheng-zi-xu-lie-by-leetcode/
+
+#C++ code
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n=nums.size();
+        if (n<2) return n;
+        
+        vector<int> cell(1);
+        cell[0]=nums[0];
+        for (int i=1; i<n; ++i)
+        {
+            if (nums[i]>cell.back())
+                cell.push_back(nums[i]);
+            else
+            {
+                int l=0, r=cell.size()-1;
+                while (l<r)
+                {
+                    int mid=l+(r-l)/2;
+                    if (cell[mid]<nums[i])
+                        l=mid+1;
+                    else
+                        r=mid;
+                }
+                cell[l]=nums[i];
+            }
+        }
+        return cell.size();
+    }
+};
+执行用时 :4 ms, 在所有 C++ 提交中击败了96.04%的用户
+内存消耗 :8.7 MB, 在所有 C++ 提交中击败了23.25%的用户
