@@ -1,0 +1,106 @@
+Combination Sum
+组合总和
+给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+candidates 中的数字可以无限制重复被选取。
+
+说明：
+所有数字（包括 target）都是正整数。
+解集不能包含重复的组合。 
+
+示例 1:
+输入: candidates = [2,3,6,7], target = 7,
+所求解集为:
+[
+  [7],
+  [2,2,3]
+]
+示例 2:
+输入: candidates = [2,3,5], target = 8,
+所求解集为:
+[
+  [2,2,2,2],
+  [2,3,3],
+  [3,5]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/combination-sum
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#solutions
+#回溯法
+#时间复杂度O(n^2),空间复杂度O(n^2)
+#my C++ code
+class Solution {
+public:
+    void combSum (vector<int>& candidates, int needed, int pos, vector<vector<int>>& res, vector<int>& tempres) { //&引用表示直接在vector里修改，像传指针一样
+        if (pos>=candidates.size()||candidates.back()>needed) return;
+        for (int i=pos; i<candidates.size(); )
+        {
+            while(candidates[i]>needed) ++i;
+            if (candidates[i]==needed)
+            {
+                tempres.push_back(candidates[i]);
+                res.push_back(tempres);
+                tempres.pop_back(); 
+                ++i;
+            }
+            else if (candidates[i]<needed)
+            {
+                tempres.push_back(candidates[i]);
+                combSum (candidates, needed-candidates[i], i, res, tempres);
+                tempres.pop_back(); 
+                ++i;
+            }
+        }
+        return; 
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        if (candidates.size()==0) return {};
+        sort(candidates.begin(), candidates.end(), greater<int>()); //greater<int>()是函数，有括号
+        vector<vector<int>> res;
+        vector<int> tempres;
+        combSum (candidates, target, 0, res, tempres);
+        return res;
+    }
+};
+执行用时 :12 ms, 在所有 C++ 提交中击败了98.68%的用户
+内存消耗 :9.3 MB, 在所有 C++ 提交中击败了93.29%的用户
+
+写法2：
+// author:rmokerone
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Solution {
+private:
+    vector<int> candidates;
+    vector<vector<int>> res;
+    vector<int> path;
+public:
+    void DFS(int start, int target) {
+        if (target == 0) {
+            res.push_back(path);
+            return;
+        }
+        for (int i = start;
+             i < candidates.size() && target - candidates[i] >= 0; i++) {
+            path.push_back(candidates[i]);
+            DFS(i, target - candidates[i]);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum(vector<int> &candidates, int target) {
+        std::sort(candidates.begin(), candidates.end());
+        this->candidates = candidates;
+        DFS(0, target);
+
+        return res;
+    }
+
+};
+作者：liweiwei1419
+链接：https://leetcode-cn.com/problems/combination-sum/solution/hui-su-suan-fa-jian-zhi-python-dai-ma-java-dai-m-2/
