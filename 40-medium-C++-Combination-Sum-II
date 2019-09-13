@@ -1,0 +1,96 @@
+Combination Sum II
+组合总和 II
+给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+candidates 中的每个数字在每个组合中只能使用一次。
+
+说明：
+所有数字（包括目标数）都是正整数。
+解集不能包含重复的组合。 
+
+示例 1:
+输入: candidates = [10,1,2,7,6,1,5], target = 8,
+所求解集为:
+[
+  [1, 7],
+  [1, 2, 5],
+  [2, 6],
+  [1, 1, 6]
+]
+
+示例 2:
+输入: candidates = [2,5,2,1,2], target = 5,
+所求解集为:
+[
+  [1,2,2],
+  [5]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/combination-sum-ii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
+#与本题类似的题
+本题40.组合总和II：给定一个可以有重复元素的数组，每一个元素在同一个组合之中只能使用一次 e.g.[2,5,2,1,2],target=5,解集[[1,2,2],[5]]
+类似题39.组合总和：给定一个无重复元素的数组，每一个元素可以在同一个组合之中被重复使用 e.g. [2,3,6,7],target=7,解集[[7],[2,2,3]]
+类似题研一入学考试：给定一个无重复元素的数组，每一个元素在同一个组合之中只能使用一次  e.g. [2,3,6,7],target=7,解集[[7]]
+
+解法类似：均使用回溯法解决
+研一题和39题很像，区别只在于回溯时候的pos取i+1（不允许重复）还是取i（允许重复）；
+第40题和研一题的处理很像，只需增加判断解集中的解的去重，可以有两种方式：
+   1.使用额外空间： 使用set，额外空间为解集的大小
+   2.使用额外时间： 判断当前元素加入当前解是否会造成重复（方法见my answer的剪枝2）
+
+#my answer
+#回溯法+剪枝
+剪枝1：将输入数组从大到小排序（此处不能使用set去重，否则解集不complete e.g.[2,5,2,1,2],target=5,解集[[1,2,2],[5]]）
+剪枝2：由于输入数组含有重复元素，需要排查解集数组不含重复的组合。
+      因此当且仅当：假如当前元素在数组中已经出现过，则必须将它们全部加入当前解，才可以将当前元素也加入当前解
+      举个例子：{10,7,6,5,2,1,1} target=8
+               tempres={6,1}  考虑第二个1  原始数组中之前存在一个1  tempres已经把这个1压进去了  继续压1 tempres={6,1,1}
+               tempres={5,2}  考虑第二个1  原始数组中之前有一个1    而tempres中并没有这个1     继续压1会造成重复组合
+               
+class Solution {
+public:
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        if (candidates.size()==0) return {};
+        sort(candidates.begin(), candidates.end(), greater<int>());//从大到小排序是为了剪枝
+        vector<vector<int>> res;
+        vector<int> tempres;
+        BackTrack(candidates, 0, target, tempres, res);
+        return res;
+    }
+    void BackTrack (vector<int>& candidates, int pos, int needed, vector<int>& tempres, vector<vector<int>>& res)
+    {
+        if (needed==0)
+        {
+            res.push_back(tempres);
+            return;
+        }
+        for (int i=pos; i<candidates.size(); ++i)
+        {
+            while (i<candidates.size()&&candidates[i]>needed) ++i;
+            if (i<candidates.size())
+            {
+                int tempi=i, countCand=0, temppos=tempres.size()-1, countTempres=0;//剪枝。由于输入数组含有重复元素，需要排查解集数组不含重复的组合
+                while (tempi>0&&candidates[tempi]==candidates[tempi-1])
+                {
+                    ++countCand;--tempi;
+                }
+                while (temppos>=0&&candidates[tempi]==tempres[temppos])
+                {
+                    ++countTempres;--temppos;
+                }
+                if (countCand==countTempres)
+                {
+                    tempres.push_back(candidates[i]);
+                    BackTrack(candidates, i+1, needed-candidates[i], tempres, res);
+                    tempres.pop_back();
+                }
+            }
+        }
+        return;
+    }
+};
+执行用时 :8 ms, 在所有 C++ 提交中击败了97.88%的用户
+内存消耗 :9.1 MB, 在所有 C++ 提交中击败了89.68%的用户
