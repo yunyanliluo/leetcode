@@ -1,0 +1,90 @@
+Word Search
+单词搜索
+给定一个二维网格和一个单词，找出该单词是否存在于网格中。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+示例:
+
+board =
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+
+给定 word = "ABCCED", 返回 true.
+给定 word = "SEE", 返回 true.
+给定 word = "ABCB", 返回 false.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/word-search
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#my answer
+#回溯法典型
+class Solution {
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        this->m=board.size(), this->n=m>0?board[0].size():0;
+        if (this->n==0||word.size()==0) return false;
+        return BackTrack(board, word, 0, -1, -1);
+    }
+    bool BackTrack (vector<vector<char>>& board, string& word, int neededpos, int mpos, int npos)//mpos,npos表示上一个字符的坐标
+    {
+        if (neededpos==word.size())
+        {
+            cout<<neededpos<<endl;return true;
+        }
+        if (neededpos==0)
+        {
+            for (int i=0; i<this->m; ++i)
+            for (int j=0; j<this->n; ++j)
+            {
+                if (board[i][j]==word[neededpos])
+                {
+                    board[i][j]='0';//一直error后来发现缺了这一行和往下数第二行
+                    if (BackTrack(board, word, 1, i, j))  return true;
+                    board[i][j]=word[neededpos];
+                }
+            }
+        }
+        else
+        {
+            int m, n;
+            if (mpos+1<this->m&&board[mpos+1][npos]==word[neededpos])
+            {
+                m=mpos+1; n=npos;
+                board[m][n]='0';
+                if (BackTrack(board, word, neededpos+1, m, n))  return true;
+                board[m][n]=word[neededpos];
+            }
+            if (mpos-1>=0&&board[mpos-1][npos]==word[neededpos])//一直error后来发现将if写成了else if
+            {
+                m=mpos-1; n=npos;
+                board[m][n]='0';
+                if (BackTrack(board, word, neededpos+1, m, n))  return true;
+                board[m][n]=word[neededpos];
+            }
+            if (npos+1<this->n&&board[mpos][npos+1]==word[neededpos])
+            {
+                m=mpos; n=npos+1;
+                board[m][n]='0';
+                if (BackTrack(board, word, neededpos+1, m, n))  return true;
+                board[m][n]=word[neededpos];
+            }
+            if (npos-1>=0&&board[mpos][npos-1]==word[neededpos])
+            {
+                m=mpos; n=npos-1;
+                board[m][n]='0';
+                if (BackTrack(board, word, neededpos+1, m, n))  return true;
+                board[m][n]=word[neededpos];
+            }
+        }
+        return false;
+    }
+private:
+    int m, n;
+};
+执行用时 :24 ms, 在所有 C++ 提交中击败了97.75%的用户
+内存消耗 :9.7 MB, 在所有 C++ 提交中击败了99.85%的用户
