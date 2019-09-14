@@ -1,0 +1,62 @@
+Repeated String Match
+重复叠加字符串匹配
+给定两个字符串 A 和 B, 寻找重复叠加字符串A的最小次数，使得字符串B成为叠加后的字符串A的子串，如果不存在则返回 -1。
+
+举个例子，A = "abcd"，B = "cdabcdab"。
+答案为 3， 因为 A 重复叠加三遍后为 “abcdabcdabcd”，此时 B 是其子串；A 重复叠加两遍后为"abcdabcd"，B 并不是其子串。
+
+注意:A 与 B 字符串的长度在1和10000区间范围内。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/repeated-string-match
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#my answer
+#string类方法
+class Solution {
+public:
+    int repeatedStringMatch(string A, string B) {
+        int alen=A.size();
+        int blen=B.size();
+        string A2="";
+        int i;
+        for (i=1; alen*i<=alen+alen+blen; ++i)//循环的退出条件这里是关键
+        {
+            A2+=A;
+            if (A2.find(B)!=-1)//-1或可写作string::npos
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+};
+
+#my improvement
+#string类方法
+将循环的初始条件加以改进
+class Solution {
+public:
+    int repeatedStringMatch(string A, string B) {
+        int alen=A.size();
+        int blen=B.size();
+        string A2="";
+        int i;
+        if(blen%alen==0)
+            i=blen/alen; 
+        else
+            i=blen/alen+1;
+        for (int j=1; j<i; ++j) A2+=A;
+        for (; alen*i<=alen+alen+blen; ++i)//将循环的初始条件加以改进
+        {
+            A2+=A;
+            if (A2.find(B)!=-1)//-1或可写作string::npos
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+};
+执行用时 :24 ms, 在所有 C++ 提交中击败了74.00%的用户
+内存消耗 :9 MB, 在所有 C++ 提交中击败了88.89%的用户
