@@ -1,0 +1,71 @@
+Subsets II
+子集 II
+给定一个可能包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+说明：解集不能包含重复的子集。
+
+示例:
+输入: [1,2,2]
+输出:
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/subsets-ii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#与本题类似的题
+本  题90.子集II：给定一个可能包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+类似题78. 子集 ：给定一个不包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+
+解法类似：都使用回溯法
+90题比78题增加了解集中的解的去重，可以有两种方法去实现：
+    （1）使用额外空间：使用set去重
+    （2）使用额外时间：假如当前元素在之前的数组中已经出现过了，那么必须已经将之前出现过的全部压入当前解，才能将当前元素也压入当前解，否则造成重复
+                     换言之，当前元素在之前的数组中已经出现过的次数，和当前解tempres中当前元素已经出现过的次数相等，才能将当前元素也压入当前解
+另外，78题可以使用位运算和动态规划去解决，90题不可以。
+     
+#my answer
+#回溯法+剪枝
+剪枝1：先将输入数组排序，再回溯
+剪枝2：当前元素在之前的数组中已经出现过的次数，和当前解tempres中当前元素已经出现过的次数相等，才能将当前元素也压入当前解，否则造成重复
+class Solution {
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        if (nums.size()==0) return {};
+        sort(nums.begin(),nums.end());
+        vector<vector<int>> res;
+        vector<int> tempres;
+        BackTrack(nums, 0, res, tempres);
+        return res;
+    }
+    void BackTrack (vector<int>& nums, int pos, vector<vector<int>>& res, vector<int>& tempres)
+    {
+        res.push_back(tempres);
+        for (int i=pos; i<nums.size(); ++i)
+        {
+            int tempi=i, count=0,temppos=tempres.size()-1;
+            while (tempi>0&&nums[tempi]==nums[tempi-1])
+            {
+                ++count;--tempi;
+            }
+            while (temppos>=0&&tempres[temppos]==nums[tempi])
+            {
+                --count;--temppos;
+            }
+            if (count==0)
+            {
+                tempres.push_back(nums[i]);
+                BackTrack(nums, i+1, res, tempres);
+                tempres.pop_back();
+            }            
+        }
+    }
+};
+执行用时 :16 ms, 在所有 C++ 提交中击败了71.45%的用户
+内存消耗 :9.3 MB, 在所有 C++ 提交中击败了72.95%的用户
