@@ -66,3 +66,28 @@ public:
 };
 执行用时 :52 ms, 在所有 C++ 提交中击败了47.85%的用户
 内存消耗 :11.6 MB, 在所有 C++ 提交中击败了93.22%的用户
+
+#方法三.炸炸的方法-双指针
+class Solution {
+public:
+    bool repeatedSubstringPattern(string s) {
+        int len=s.length();
+        if (len<=1) return false;
+        int slow=0, fast=1;
+        while (fast<len)
+        {
+            while (fast<len&&s[fast]!=s[slow]) ++fast;
+            if (fast==len) return false;
+            int tmp=fast;
+            if (len%tmp==0)
+            {
+                while (fast<len&&s[fast++]==s[slow++]) ;
+                if (s[fast-1]==s[slow-1]) return true; 
+            }
+            slow=0;fast=tmp+1;
+        }
+        return false;
+    }
+};
+执行用时 :28 ms, 在所有 C++ 提交中击败了96.85%的用户
+内存消耗 :11.5 MB, 在所有 C++ 提交中击败了93.22%的用户
