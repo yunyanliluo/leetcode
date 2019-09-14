@@ -31,10 +31,43 @@ public:
         return -1;
     }
 };
+执行用时 :24 ms, 在所有 C++ 提交中击败了74.00%的用户
+内存消耗 :9 MB, 在所有 C++ 提交中击败了88.89%的用户 
 
-#my improvement
+#improvement1
 #string类方法
 将循环的初始条件加以改进
+#时间和空间未有明显改变
+class Solution {
+public:
+    int repeatedStringMatch(string A, string B) {
+        int alen=A.size();
+        int blen=B.size();
+        string A2="";
+        int i;//将循环的初始条件加以改进
+        if(blen%alen==0)
+            i=blen/alen; 
+        else
+            i=blen/alen+1;
+        for (int j=1; j<i; ++j) A2+=A;
+        for (; alen*i<=alen+alen+blen; ++i)
+        {
+            A2+=A;
+            if (A2.find(B)!=-1)//-1或可写作string::npos
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+};
+
+#solutions
+#improvement2
+#时间和空间未有明显改变
+实际上，判断A2.find(B)!=-1只进行了两次
+第一次是A2.size()位于[blen,blen+alen)，第二次是A2.size()位于[blen+alen,blen+alen+alen)
+因此for循环可以改成更简单的结构，下面使用if……else……来判断
 class Solution {
 public:
     int repeatedStringMatch(string A, string B) {
@@ -46,17 +79,39 @@ public:
             i=blen/alen; 
         else
             i=blen/alen+1;
-        for (int j=1; j<i; ++j) A2+=A;
-        for (; alen*i<=alen+alen+blen; ++i)//将循环的初始条件加以改进
+        for (int j=1; j<=i; ++j) A2+=A;
+        if (A2.find(B)!=-1)
+        {
+            return i;
+        }
+        else
         {
             A2+=A;
-            if (A2.find(B)!=-1)//-1或可写作string::npos
+            if (A2.find(B)!=-1)
             {
-                return i;
+                return i+1;
             }
         }
         return -1;
     }
 };
-执行用时 :24 ms, 在所有 C++ 提交中击败了74.00%的用户
-内存消耗 :9 MB, 在所有 C++ 提交中击败了88.89%的用户
+
+#方法二
+逐个字符进行比较
+巨慢
+class Solution {
+public:
+    int repeatedStringMatch(string A, string B) {
+        int alen=A.size();
+        int blen=B.size();
+        for (int i=0; i<alen; ++i)
+        {
+            int j=0;
+            while (j<blen&&A[(i+j)%alen]==B[j]) ++j;
+            if (j==blen) return (i+j-1)/alen+1;
+        }
+        return -1;
+    }
+};
+执行用时 :860 ms, 在所有 C++ 提交中击败了5.00%的用户
+内存消耗 :8.7 MB, 在所有 C++ 提交中击败了96.97%的用户
