@@ -1,18 +1,13 @@
 Jump Game
 跳跃游戏
-给定一个非负整数数组，你最初位于数组的第一个位置。
-
-数组中的每个元素代表你在该位置可以跳跃的最大长度。
-
-判断你是否能够到达最后一个位置。
+给定一个非负整数数组，你最初位于数组的第一个位置。数组中的每个元素代表你在该位置可以向右跳跃的最大长度。判断你是否能够到达最后一个位置。
 
 示例 1:
-
 输入: [2,3,1,1,4]
 输出: true
 解释: 从位置 0 到 1 跳 1 步, 然后跳 3 步到达最后一个位置。
-示例 2:
 
+示例 2:
 输入: [3,2,1,0,4]
 输出: false
 解释: 无论怎样，你总会到达索引为 3 的位置。但该位置的最大跳跃长度是 0 ， 所以你永远不可能到达最后一个位置。
@@ -23,37 +18,7 @@ Jump Game
 
 #solutions
 
-方法1
-#dp
-#时间复杂度O(n^2)，空间复杂度O（n）
-由于我们每次只会向右跳动，意味着如果我们从右边开始动态规划，每次查询右边节点的信息，都是已经计算过了的，
-不再需要额外的递归开销，因为我们每次在dp表中都可以找到结果。
-class Solution {
-public:
-    bool canJump(vector<int>& nums) {
-        int n=nums.size();
-        bool dp[n];
-        dp[n-1]=true;
-        for (int i=n-2; i>=0; --i)
-        {
-            dp[i]=false;
-            for (int j=nums[i]; j>0; --j)
-            {
-                if (i+j>=n-1||dp[i+j]==true)
-                {
-                    dp[i]=true;
-                       break;
-                }
-            }
-        }
-        return dp[0];
-    }
-};
-
-执行用时 :700 ms, 在所有 C++ 提交中击败了12.41%的用户
-内存消耗 :10 MB, 在所有 C++ 提交中击败了69.17%的用户
-
-【最佳】方法2
+【最佳】方法1
 #贪心
 #时间复杂度O（n），空间复杂度O（1）
 链接：https://leetcode-cn.com/problems/jump-game/solution/tiao-yue-you-xi-by-leetcode/
@@ -86,8 +51,87 @@ public:
 执行用时 :12 ms, 在所有 C++ 提交中击败了88.12%的用户
 内存消耗 :9.8 MB, 在所有 C++ 提交中击败了87.48%的用户
 
+方法1-贪心的另一种写法（从前往后）
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int n=nums.size();
+        int reach=0; //可以向右到达的最远点下标
+        for (int i=0; i<n; ++i)
+        {
+            if(i<=reach)
+            {
+                reach=max(reach,i+nums[i]);
+                if(reach>=n-1) return true;
+            }
+        }
+        return false;
+    }
+};
+执行用时 :8 ms, 在所有 C++ 提交中击败了98.58%的用户
+内存消耗 :9.9 MB, 在所有 C++ 提交中击败了70.90%的用户
+
+方法2
+#dp
+#时间复杂度O(n^2)，空间复杂度O（n），很慢
+由于我们每次只会向右跳动，意味着如果我们从右边开始动态规划，每次查询右边节点的信息，都是已经计算过了的，
+不再需要额外的递归开销，因为我们每次在dp表中都可以找到结果。
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int n=nums.size();
+        bool dp[n];
+        dp[n-1]=true;
+        for (int i=n-2; i>=0; --i)
+        {
+            dp[i]=false;
+            for (int j=nums[i]; j>0; --j)
+            {
+                if (i+j>=n-1||dp[i+j]==true)
+                {
+                    dp[i]=true;
+                       break;
+                }
+            }
+        }
+        return dp[0];
+    }
+};
+执行用时 :700 ms, 在所有 C++ 提交中击败了12.41%的用户
+内存消耗 :10 MB, 在所有 C++ 提交中击败了69.17%的用户
+
+方法2-优化
+假如第二点无法到达最后一个位置，同时nums[1]==2，那么一定有第三点、第四点无法到达最后一个位置。因此不需要再判断第三、四点了。
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int n=nums.size();
+        bool dp[n];
+        dp[n-1]=true;
+        for (int i=n-2; i>=0; --i)
+        {
+            dp[i]=false;
+            int tempjump=1;
+            while(tempjump<=nums[i])
+            {
+                if(dp[i+tempjump]==true)
+                {
+                    dp[i]=true;break;
+                }
+                else
+                {
+                    tempjump+=nums[i+tempjump]+1;
+                }
+            }
+        }
+        return dp[0];
+    }
+};
+执行用时 :16 ms, 在所有 C++ 提交中击败了65.08%的用户
+内存消耗 :10 MB, 在所有 C++ 提交中击败了69.00%的用户
+
 方法3. 回溯法
-时间复杂度O（2^n），空间复杂度O（n）
+时间复杂度O（2^n），空间复杂度O（n），太太太慢了
 以示例1为例，可以这样思考，从第一个位置起跳，假设可以跳至多两步，那么便是可以跳到第二和第三个位置。
 只要接下来从第二个位置或者从第三个位置起跳的话，能够调到最后一个位置，那么从第一个位置起跳便可以到达最后一个位置。网上提供了java代码。
 链接：https://leetcode-cn.com/problems/jump-game/solution/tiao-yue-you-xi-by-leetcode/
