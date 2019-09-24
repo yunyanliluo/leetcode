@@ -22,8 +22,12 @@ Jump Game
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 
 #solutions
+
+方法1
 #dp
-#O(n^2)
+#时间复杂度O(n^2)，空间复杂度O（n）
+由于我们每次只会向右跳动，意味着如果我们从右边开始动态规划，每次查询右边节点的信息，都是已经计算过了的，
+不再需要额外的递归开销，因为我们每次在dp表中都可以找到结果。
 class Solution {
 public:
     bool canJump(vector<int>& nums) {
@@ -46,13 +50,109 @@ public:
     }
 };
 
-执行用时 :
-700 ms
-, 在所有 C++ 提交中击败了
-12.41%
-的用户
-内存消耗 :
-10 MB
-, 在所有 C++ 提交中击败了
-69.17%
-的用户
+执行用时 :700 ms, 在所有 C++ 提交中击败了12.41%的用户
+内存消耗 :10 MB, 在所有 C++ 提交中击败了69.17%的用户
+
+【最佳】方法2
+#贪心
+#时间复杂度O（n），空间复杂度O（1）
+链接：https://leetcode-cn.com/problems/jump-game/solution/tiao-yue-you-xi-by-leetcode/
+"当我们把代码改成自底向上的模式，我们会有一个重要的发现，从某个位置出发，我们只需要找到第一个标记为 GOOD 的坐标（由跳出循环的条件可得），
+也就是说找到最左边的那个坐标。如果我们用一个单独的变量来记录最左边的 GOOD 位置，我们就可以避免搜索整个数组，进而可以省略整个 memo 数组。
+
+从右向左迭代，对于每个节点我们检查是否存在一步跳跃可以到达 GOOD 的位置（currPosition + nums[currPosition] >= leftmostGoodIndex）。
+如果可以到达，当前位置也标记为 GOOD ，同时，这个位置将成为新的最左边的 GOOD 位置，一直重复到数组的开头，
+如果第一个坐标标记为 GOOD 意味着可以从第一个位置跳到最后的位置。"
+
+#my C++ code
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int n=nums.size();
+        int good=n-1; //good means you can jump to the last index from the index
+        for (int i=n-2; i>=0; --i)
+        {
+            if (good-i<=nums[i])
+            {
+                good=i;
+            }
+        }
+        if (good)
+            return false;
+        else
+            return true;
+    }
+};
+执行用时 :12 ms, 在所有 C++ 提交中击败了88.12%的用户
+内存消耗 :9.8 MB, 在所有 C++ 提交中击败了87.48%的用户
+
+方法3. 回溯法
+时间复杂度O（2^n），空间复杂度O（n）
+以示例1为例，可以这样思考，从第一个位置起跳，假设可以跳至多两步，那么便是可以跳到第二和第三个位置。
+只要接下来从第二个位置或者从第三个位置起跳的话，能够调到最后一个位置，那么从第一个位置起跳便可以到达最后一个位置。网上提供了java代码。
+链接：https://leetcode-cn.com/problems/jump-game/solution/tiao-yue-you-xi-by-leetcode/
+# Java code
+public class Solution {
+    public boolean canJumpFromPosition(int position, int[] nums) {
+        if (position == nums.length - 1) {
+            return true;
+        }
+        int furthestJump = Math.min(position + nums[position], nums.length - 1);
+        for (int nextPosition = position + 1; nextPosition <= furthestJump; nextPosition++) {
+            if (canJumpFromPosition(nextPosition, nums)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    public boolean canJump(int[] nums) {
+        return canJumpFromPosition(0, nums);
+    }
+}
+
+
+方法4. dp – 一维存储空间（回溯法的优化）
+时间复杂度O（n*n），空间复杂度O（n*2）
+链接：https://leetcode-cn.com/problems/jump-game/solution/tiao-yue-you-xi-by-leetcode/
+和方法3相同，惟一的区别是，设置一个额外数组存储从每一个位置起跳能否到达最后一个位置的结果，这样就不需要回溯法中大量的重复计算，节约时间。具体步骤如下：
+i.	初始化 memo 的所有元素为 UNKNOWN，除了最后一个显然是 GOOD （自己一定可以跳到自己）
+ii.	优化递归算法，每步回溯前先检查这个位置是否计算过（当前值为：GOOD / BAD）
+1.	如果已知直接返回结果 True / False
+2.	否则按照之前的回溯步骤计算
+iii.	计算完毕后，将结果存入memo表中
+
+# Java code
+enum Index {
+    GOOD, BAD, UNKNOWN
+}
+
+public class Solution {
+    Index[] memo;
+
+    public boolean canJumpFromPosition(int position, int[] nums) {
+        if (memo[position] != Index.UNKNOWN) {
+            return memo[position] == Index.GOOD ? true : false;
+        }
+
+        int furthestJump = Math.min(position + nums[position], nums.length - 1);
+        for (int nextPosition = position + 1; nextPosition <= furthestJump; nextPosition++) {
+            if (canJumpFromPosition(nextPosition, nums)) {
+                memo[position] = Index.GOOD;
+                return true;
+            }
+        }
+
+        memo[position] = Index.BAD;
+        return false;
+    }
+
+    public boolean canJump(int[] nums) {
+        memo = new Index[nums.length];
+        for (int i = 0; i < memo.length; i++) {
+            memo[i] = Index.UNKNOWN;
+        }
+        memo[memo.length - 1] = Index.GOOD;
+        return canJumpFromPosition(0, nums);
+    }
+}
