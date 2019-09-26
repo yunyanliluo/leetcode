@@ -24,8 +24,11 @@ Best Time to Buy and Sell Stock with Transaction Fee
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 
 #solutions
+
+方法1.
 #dp
 #一个DP解所有股票问题
+#思路来自下面附录文章
 #时间复杂度O(n)，空间复杂度O(1)
 #my C++ code
 class Solution {
@@ -46,7 +49,63 @@ public:
 执行用时 :124 ms, 在所有 C++ 提交中击败了97.03%的用户
 内存消耗 :15 MB, 在所有 C++ 提交中击败了88.24%的用户
 
-思路来源：
+方法2.
+https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/solution/ti-hao-122mei-you-shou-xu-fei-jia-yi-dian-dong-xi-/
+结合没有手续费的题来看：（图解见上面的链接）
+没有手续费：
+#python code
+class Solution:
+    def maxProfit(self, prices: List[int]) -> int:
+        n = len(prices)
+        if n < 2:
+             return 0
+        ans = 0
+        #记录着低谷
+        valley = prices[0]
+        
+        for i in range(1, n):            
+            #发现更低的谷，弃前谷
+            if prices[i] < valley:
+                valley = prices[i]
+   
+            # 发现一个峰比谷高
+            elif prices[i] > valley:
+                #累积差
+                ans += prices[i]-valley
+                #此峰当作新谷
+                valley = prices[i]
+                
+        return ans
+
+有手续费：
+#python code
+class Solution:
+    def maxProfit(self, prices: List[int], fee: int) -> int:
+        n = len(prices)
+        if n < 2:
+             return 0
+        ans = 0
+        #记录着低谷
+        valley = prices[0]
+        
+        for i in range(1, n):            
+            #发现更低的谷，弃前谷
+            if prices[i] < valley:
+                valley = prices[i]
+   
+            # prices[i]-fee：扣掉手续费的峰
+            # 发现一个扣掉手续费的峰比谷高
+            elif prices[i]-fee > valley:
+                #累积差
+                ans += (prices[i]-fee)-valley
+                #此扣掉手续费的峰当作新谷
+                valley = prices[i]-fee
+                
+        return ans
+
+
+
+附：方法1dp的思路来源：
 一个方法团灭 6 道股票问题
 https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/solution/yi-ge-fang-fa-tuan-mie-6-dao-gu-piao-wen-ti-by-l-2/
 很多读者抱怨股票系列问题奇技淫巧太多，如果面试真的遇到这类问题，基本不会想到那些巧妙的办法，怎么办？所以本文拒绝奇技淫巧，而是稳扎稳打，只用一种通用方法解决所用问题，以不变应万变。
@@ -107,7 +166,7 @@ for 0 <= i < n:
 
 二、状态转移框架
 现在，我们完成了「状态」的穷举，我们开始思考每种「状态」有哪些「选择」，应该如何更新「状态」。只看「持有状态」，可以画个状态转移图。
-（图，鄙人粘贴不过来，请自行想象一下）
+（图见原文的链接，鄙人粘贴不过来，请自行想象一下）
 
 
 通过这个图可以很清楚地看到，每种状态（0 和 1）是如何转移而来的。根据这个图，我们来写一下状态转移方程：
