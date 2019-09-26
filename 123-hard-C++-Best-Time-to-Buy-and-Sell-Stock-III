@@ -26,6 +26,14 @@ Best Time to Buy and Sell Stock III
 
 #my answer
 #dp
+这道题是一道hard，但是和股票系列的其它问题相比，只是多了需要考虑k的因素：k是最多交易的次数，k=2.
+因此在进行动态规划的时候，需要考虑k，状态方程里k可以为1或2.
+状态转移方程为
+dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1] + prices[i])
+dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i])
+其中k=1或2
+因此可以将k的不同取值穷举出来，代码如下：
+
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
@@ -44,3 +52,5 @@ public:
 };
 执行用时 :8 ms, 在所有 C++ 提交中击败了91.72%的用户
 内存消耗 :9.5 MB, 在所有 C++ 提交中击败了67.68%的用户
+
+思路详解见股票问题带手续费的那道714题的附录的题解，
