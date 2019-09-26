@@ -1,0 +1,66 @@
+Previous Permutation With One Swap
+交换一次的先前排列
+给你一个正整数的数组 A（其中的元素不一定完全不同），请你返回可在 一次交换（交换两数字 A[i] 和 A[j] 的位置）后得到的、按字典序排列小于 A 的最大可能排列。
+如果无法这么操作，就请返回原数组。
+
+示例 1：
+输入：[3,2,1]
+输出：[3,1,2]
+解释：
+交换 2 和 1
+ 
+示例 2：
+输入：[1,1,5]
+输出：[1,1,5]
+解释： 
+这已经是最小排列
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/previous-permutation-with-one-swap
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#solutions
+#字典序
+链接：https://leetcode-cn.com/problems/previous-permutation-with-one-swap/solution/han-xiang-xi-fen-xi-si-lu-jian-dan-ti-mu-you-qu-by/
+这道题目的关键是 按字典序排列小于 A 的最大可能排列， 那么步骤如下：
+1.对当前序列进行逆序查找，找到第一个降序的位置 i，使得 A[i]>A[i+1]A[i]>A[i+1]
+    由于 A[i]>A[i+1]A[i]>A[i+1]，必能构造比当前字典序小的序列
+    由于逆序查找，交换 A[i] 为最优解
+2.寻找在 A[i] 右边的小于 A[i] 的最大的数字（如果有多个则取左边第一个） A[j]
+    由于 A[j] < A[]i]A[j]<A[]i], 交换 A[i] 与 A[j] 后的序列字典序一定小于当前字典序
+    由于 A[j] 是满足关系的最大的最左的，因此一定是满足小于关系的交换后字典序最大的
+这里的两条，最大和最左边缺一不可，可以结合下面几个样例理解：
+[3, 1, 1, 3] => [1, 3, 1, 3]
+[3, 1, 2, 3] => [2, 1, 3, 3]
+[4, 1, 2, 3] => [3, 1, 2, 4]
+
+#my C++ code
+class Solution {
+public:
+    vector<int> prevPermOpt1(vector<int>& A) {
+        for(vector<int>::iterator iter=A.end()-1;iter!=A.begin();--iter)
+        {
+            if((*iter)<(*(iter-1)))
+            {
+                --iter;
+                vector<int>::iterator it=iter+1;//target for iter to swag with
+                for(vector<int>::iterator iter2=iter+1;iter2!=A.end();++iter2)
+                {
+                    if((*iter)>(*iter2))
+                    {
+                        if((*iter2)>(*it))
+                        {
+                            it=iter2;
+                        }
+                        
+                    }
+                }
+                iter_swap(it,iter);
+                return A;
+            }
+        }
+        return A;
+    }
+};
+执行用时 :128 ms, 在所有 C++ 提交中击败了97.89%的用户
+内存消耗 :12.5 MB, 在所有 C++ 提交中击败了100.00%的用户
