@@ -1,3 +1,13 @@
+Longest Palindromic Substring
+
+#my answer
+dp[i][j] = length of the longest approproate substring of s[i][j]
+#runtime error
+
+
+#solutions
+1.dp - true or false instead of length
+#时间复杂度O(n^2)，空间复杂度O(n^2)
 class Solution {
 public:
     string longestPalindrome(string s) {
@@ -8,21 +18,90 @@ public:
         bool dp[1000][1000];
         for (int i=n-1; i>=0; --i)
         {
-            dp[i][i]=true;
+            dp[i][i]=1;
             for (int j=i+1; j<n; ++j)
             {
-                if(s[i]==s[j]&&dp[i+1][j-1]==true)
+                if(s[i]==s[j]&&(i+1==j||dp[i+1][j-1]))//特殊情况就是i+1==j，dp值未定义
                 {
-                    dp[i][j]=true;
+                    dp[i][j]=1;
                     if(j-i+1>maxlen)
+                    {
+                        maxlen=j-i+1;
                         resstr=s.substr(i, j-i+1);
+                    }    
                 }
                 else
                 {
-                    dp[i][j]=false;
+                    dp[i][j]=0;
                 }
             }
         }
         return resstr;
     }
 };
+执行用时 :124 ms, 在所有 C++ 提交中击败了49.33%的用户
+内存消耗 :17.4 MB, 在所有 C++ 提交中击败了40.35%的用户
+
+2.中心扩展法
+子串的对称中心总共有2*n-1个，包含n个奇数长度和n-1个偶数长度，分别求一下最长子串
+#时间复杂度O(n^2)，空间复杂度O(1)
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n=s.size();
+        if(n==0) return "";
+        string resstr=s.substr(0,1);
+        int maxlen=1;
+        for (int i=1; i<n-1; ++i)
+        {
+            int j;
+            for(j=1;j<=i&&i+j<n;++j)
+            {
+                if(s[i-j]!=s[i+j])
+                {
+                    if(2*j-1>maxlen)
+                    {
+                        maxlen=2*j-1;
+                        resstr=s.substr(i-j+1, 2*j-1);
+                    }
+                    break;
+                }
+            }
+            if(j>i||i+j>=n)//假如不是s[i-j]!=s[i+j]退出上一个循环的
+            {
+                if(2*j-1>maxlen)
+                {
+                    maxlen=2*j-1;
+                    resstr=s.substr(i-j+1, 2*j-1);
+                }
+            }
+        }
+        for (int i=0; i<n-1; ++i)
+        {
+            int j;
+            for(j=0;j<=i&&i+j+1<n;++j)
+            {
+                if(s[i-j]!=s[i+j+1])
+                {
+                    if(2*j>maxlen)
+                    {
+                        maxlen=2*j;
+                        resstr=s.substr(i-j+1, 2*j);
+                    }
+                    break;
+                }
+            }
+            if(j>i||i+j+1>=n)
+            {
+                if(2*j>maxlen)
+                {
+                    maxlen=2*j;
+                    resstr=s.substr(i-j+1, 2*j);
+                }
+            }
+        }
+        return resstr;
+    }
+};
+执行用时 :20 ms, 在所有 C++ 提交中击败了89.92%的用户
+内存消耗 :12.6 MB, 在所有 C++ 提交中击败了53.36%的用户
