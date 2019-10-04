@@ -1,0 +1,48 @@
+Reverse Linked List
+反转链表
+
+#my answer
+使用三个指针迭代
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode *p,*q,*r;
+        if(head==NULL||head->next==NULL) return head;
+        p=head;q=head->next;r=NULL;
+        while(q)
+        {
+            p->next=r;
+            r=p;p=q;q=q->next;
+        }
+        p->next=r;
+        return p;
+    }
+};
+执行用时 :4 ms, 在所有 C++ 提交中击败了99.99%的用户
+内存消耗 :9.2 MB, 在所有 C++ 提交中击败了21.30%的用户
+
+#solutions
+递归法
+链接：https://leetcode-cn.com/problems/reverse-linked-list/solution/fan-zhuan-lian-biao-by-leetcode/
+若从节点 n_{k+1}到 n_{m}已经被反转，而我们正处于 n_{k} ：
+n_{1} ...  n_{k-1}  n_{k}  n_{k+1}  ...  n_{m}
+我们希望 n_{k+1}的下一个节点指向 n_{k}
+所以，n_{k}.next.next = n_{k}
+#java code
+public ListNode reverseList(ListNode head) {
+    if (head == null || head.next == null) return head;
+    ListNode p = reverseList(head.next);
+    head.next.next = head;
+    head.next = null;
+    return p;
+}
+时间复杂度：O(n)，假设 n 是列表的长度，那么时间复杂度为 O(n)。
+空间复杂度：O(n)，由于使用递归，将会使用隐式栈空间。递归深度可能会达到 n 层。
