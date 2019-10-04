@@ -68,7 +68,7 @@ public:
 
 2.迭代（循环）
 链接：https://leetcode-cn.com/problems/symmetric-tree/solution/dui-cheng-er-cha-shu-by-leetcode/
-利用队列（具体使用线性列表即可），类似BFS做遍历，每次压入两个对应位置的元素，若值不相等则返回false，否则继续将左右孩子压入队列。终止条件是栈空
+利用队列，类似BFS做遍历，每次压入两个对应位置的元素，若值不相等则返回false，否则继续将左右孩子压入队列。终止条件是栈空
 时间复杂度O(n),空间复杂度O(n)
 #java code
 public boolean isSymmetric(TreeNode root) {
