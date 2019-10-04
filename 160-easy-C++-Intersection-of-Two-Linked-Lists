@@ -1,0 +1,53 @@
+Intersection-of-Two-Linked-Lists
+相交链表
+
+#solutions
+1.双指针法
+两个指针分别指向两个链表头部，每次前进一格，当一个指针指向某一个链表尾部时，跳到另一个指针的头部继续。直到两个指针相等。
+原因：
+两个链表从某一个intersection node开始，同步，一直到链表尾部，
+假设链表1=a+c，链表2=b+c，
+那么有a+c+b=b+c+a，
+也就是说，当两个指针分别跳到另一链表中继续前进，必定会在某一时刻开始重合。
+时间复杂度 : O(m+n)。
+空间复杂度 : O(1)。
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode *p,*q;
+        p=headA; q=headB;
+        int changeRule=0;//测试样例含有不存在intersection node的情况
+        if(p==NULL||q==NULL) return NULL;//测试样例含有这种
+        while(p!=q&&changeRule<3)
+        {
+            if(p->next!=NULL) p=p->next;
+            else {
+                p=headB;
+                ++changeRule;
+            }
+            if(q->next!=NULL) q=q->next;
+            else {
+                q=headA;
+                ++changeRule;
+            }
+        }
+        if(p==q) return p;
+        return NULL;
+    }
+};
+执行用时 :52 ms, 在所有 C++ 提交中击败了97.34%的用户
+内存消耗 :16.8 MB, 在所有 C++ 提交中击败了19.36%的用户
+
+方法二: 哈希表法
+链接：https://leetcode-cn.com/problems/intersection-of-two-linked-lists/solution/xiang-jiao-lian-biao-by-leetcode/
+遍历链表 A 并将每个结点的地址/引用存储在哈希表中。然后检查链表 B 中的每一个结点 b_ib 是否在哈希表中。若在，则 b_ib 为相交结点。
+时间复杂度 : O(m+n)。
+空间复杂度 : O(m) 或 O(n)。
