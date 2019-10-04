@@ -1,0 +1,59 @@
+Min Stack
+最小栈
+
+#solutions
+方法1.空间换时间
+使用辅助栈，存最小值，双栈不同步
+当一个小于等于当前最小值（辅助栈栈顶元素）的值进入模拟栈时，同时更新辅助栈。注意：小于等于。
+一旦pop掉的元素等于辅助栈栈顶元素，将辅助栈栈顶元素一并pop。
+时间O(1),空间O(n)
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    vector<int> stk;
+    vector<int> minval;//辅助栈存最小值   //注意喔！这样的类变量初始化是OK的，而且类方法里使用不需要加this->。
+    
+    MinStack() {
+        stk.clear();
+        minval.clear();
+    }
+    
+    void push(int x) {
+        stk.push_back(x);
+        if(minval.empty()||x<=minval.back())
+            minval.push_back(x);
+    }
+    
+    void pop() {
+        if(stk.empty()) return;
+        if(!minval.empty()&&stk.back()==minval.back())
+            minval.pop_back();
+        stk.pop_back();
+    }
+    
+    int top() {
+        if(stk.empty()) return INT_MIN;
+        return stk.back();
+    }
+    
+    int getMin() {
+        if(minval.empty()) return INT_MIN;
+        return minval.back();
+    }
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack* obj = new MinStack();
+ * obj->push(x);
+ * obj->pop();
+ * int param_3 = obj->top();
+ * int param_4 = obj->getMin();
+ */
+执行用时 :28 ms, 在所有 C++ 提交中击败了99.56%的用户
+内存消耗 :16.8 MB, 在所有 C++ 提交中击败了83.19%的用户
+
+方式2.双栈同步
+让辅助栈与模拟栈永远等高
+这样不需要判断何时辅助栈出栈和入栈，只需要跟随模拟栈保持一致
+但是占用空间较大
