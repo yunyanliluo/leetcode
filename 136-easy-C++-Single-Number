@@ -1,0 +1,74 @@
+Single Number
+只出现一次的数字
+Given a non-empty array of integers, every element appears twice except for one. Find that single one.
+Note:Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?
+
+Example 1:
+Input: [2,2,1]
+Output: 1
+
+Example 2:
+Input: [4,1,2,1,2]
+Output: 4
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/single-number
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#solutions
+1.位运算法
+^是按位异或运算
+a^a=0
+a^0=a
+#my C++ code
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int res=0;
+        for(int i=0;i<nums.size();++i) res=res^nums[i];
+        return res;
+    }
+};
+执行用时 :12 ms, 在所有 C++ 提交中击败了97.11%的用户
+内存消耗 :9.6 MB, 在所有 C++ 提交中击败了66.20%的用户
+
+2.数学解法（C++很麻烦）
+2*(a+b+c)-(2*a+2*b+c)=c
+链接：https://leetcode-cn.com/problems/single-number/solution/zhi-chu-xian-yi-ci-de-shu-zi-by-leetcode/
+时间On,空间On（set空间）
+#python code
+class Solution(object):
+    def singleNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        return 2 * sum(set(nums)) - sum(nums)
+
+3.容器
+C++11中的散列表（哈希表）只有四种：unordered_(multi)set/map（https://www.cnblogs.com/tekkaman/p/3504358.html）
+这里使用unordered_set
+链接：https://leetcode-cn.com/problems/single-number/solution/zhi-chu-xian-yi-ci-de-shu-zi-by-leetcode/
+时间On,空间On
+#my C++ code
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        unordered_set<int> st;
+        for(int i=0;i<nums.size();++i)
+        {
+            if(st.find(nums[i])==st.end())
+            {
+                st.insert(nums[i]);
+            }
+            else
+            {
+                st.erase(nums[i]);
+            }
+        }
+        return *st.begin();
+    }
+};
+执行用时 :28 ms, 在所有 C++ 提交中击败了31.15%的用户
+内存消耗 :11.4 MB, 在所有 C++ 提交中击败了6.27%的用户
+使用哈希表相比于使用list线性列表，提升了查找速度，从On到O1的提升。
