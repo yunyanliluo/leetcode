@@ -1,0 +1,90 @@
+Maximum Depth of Binary Tree
+
+#my answer
+#DFS
+时间复杂度O(n),空间复杂度最坏O(n)最好O(logn)
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if(root==NULL){
+            this->maxdepth=0;
+            this->tmpdepth=0;
+            return 0;
+        }
+        this->maxdepth=0;
+        this->tmpdepth=0;
+        DFS(root);
+        return this->maxdepth;
+    }
+    void DFS(TreeNode* r){
+        if(r==NULL)
+        {
+            if(this->tmpdepth>this->maxdepth)
+            {
+                this->maxdepth=this->tmpdepth;
+            }
+            return;
+        }
+        ++this->tmpdepth;
+        DFS(r->left);
+        DFS(r->right);
+        --this->tmpdepth;
+        return;
+    }
+private:
+    int maxdepth, tmpdepth;
+};
+执行用时 :16 ms, 在所有 C++ 提交中击败了63.46%的用户
+内存消耗 :19.1 MB, 在所有 C++ 提交中击败了82.40%的用户
+
+另一种同样的C++写法由 西瓜皮 在https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/er-cha-shu-de-zui-da-shen-du-by-leetcode/
+的评论中提供，代码更为简洁（方法和我一模一样）：
+class Solution {
+    int max = 0;
+    int depth = 0;
+    
+    public int maxDepth(TreeNode root) {
+        backOrder(root);
+        
+        return max;
+    }
+    
+    private void backOrder(TreeNode root) {
+        if (root != null) {
+            depth++;
+            max = Math.max(max, depth);
+            backOrder(root.left);
+            backOrder(root.right);
+            depth--;
+        }
+    }
+}
+
+#solutions
+1.两行的递归写法
+链接：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/er-cha-shu-de-zui-da-shen-du-by-leetcode/
+时间复杂度O(n),空间复杂度最坏O(n)最好O(logn)
+#my C++ code
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if(root==NULL) return 0;
+        return max(maxDepth(root->left), maxDepth(root->right))+1;
+    }
+};
+执行用时 :12 ms, 在所有 C++ 提交中击败了86.31%的用户
+内存消耗 :19.3 MB, 在所有 C++ 提交中击败了56.00%的用户
+
+2.迭代（循环）
+stack实现DFS或queue实现BFS
+链接：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/er-cha-shu-de-zui-da-shen-du-by-leetcode/
+时间复杂度O(n),空间复杂度O(n)
