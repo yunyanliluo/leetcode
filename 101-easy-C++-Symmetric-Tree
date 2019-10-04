@@ -1,0 +1,127 @@
+Symmetric Tree
+Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
+
+For example, this binary tree [1,2,2,3,4,4,3] is symmetric:
+
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+ 
+
+But the following [1,2,2,null,3,null,3] is not:
+
+    1
+   / \
+  2   2
+   \   \
+   3    3
+ 
+
+Note:
+Bonus points if you could solve it both recursively and iteratively.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/symmetric-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#my answer
+使用左子树前序遍历和右子树后序遍历，这样是不对的。因为遍历过后子串reverse不变，不代表左右子树每一对相同的值位于镜面对称的位置上。
+
+#solutions
+1.递归
+对称二叉树 <==> 左右子树镜面对称
+两树镜面对称 <==> 根节点相等&&每个树的左子树和另一个树的右子树镜面对称
+时间复杂度O(n),空间复杂度最坏O(n)平均O(logn)
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        if(root==NULL||isMirror(root->left, root->right)) return true;
+        return false;
+    }
+    bool isMirror(TreeNode* n1, TreeNode* n2){
+        if(n1==NULL&&n2==NULL) return true;
+        if(n1!=NULL&&n2!=NULL)
+        {
+            if(n1->val==n2->val&&
+               isMirror(n1->left,n2->right)&&
+               isMirror(n2->left,n1->right))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+执行用时 :4 ms, 在所有 C++ 提交中击败了95.00%的用户
+内存消耗 :14.7 MB, 在所有 C++ 提交中击败了90.68%的用户
+
+2.迭代（循环）
+链接：https://leetcode-cn.com/problems/symmetric-tree/solution/dui-cheng-er-cha-shu-by-leetcode/
+利用队列（具体使用线性列表即可），类似BFS做遍历，每次压入两个对应位置的元素，若值不相等则返回false，否则继续将左右孩子压入队列。终止条件是栈空
+时间复杂度O(n),空间复杂度O(n)
+#java code
+public boolean isSymmetric(TreeNode root) {
+    Queue<TreeNode> q = new LinkedList<>();
+    q.add(root);
+    q.add(root);
+    while (!q.isEmpty()) {
+        TreeNode t1 = q.poll();
+        TreeNode t2 = q.poll();
+        if (t1 == null && t2 == null) continue;
+        if (t1 == null || t2 == null) return false;
+        if (t1.val != t2.val) return false;
+        q.add(t1.left);
+        q.add(t2.right);
+        q.add(t1.right);
+        q.add(t2.left);
+    }
+    return true;
+}
+#my C++ code
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        if(root==NULL) return true;
+        queue<struct TreeNode*> que;
+        que.push(root->left);
+        que.push(root->right);
+        while(!que.empty())
+        {
+            struct TreeNode* t1=que.front();
+            que.pop();
+            struct TreeNode* t2=que.front();
+            que.pop();
+            if(t1==NULL&&t2==NULL) continue;//继续处理队列后续节点
+            if(t1==NULL||t2==NULL) return false;
+            if(t1->val!=t2->val) return false;
+            que.push(t1->left);
+            que.push(t2->right);
+            que.push(t1->right);
+            que.push(t2->left);
+            
+        }
+        return true;
+    }
+};
+执行用时 :12 ms, 在所有 C++ 提交中击败了41.85%的用户
+内存消耗 :14.8 MB, 在所有 C++ 提交中击败了85.18%的用户
