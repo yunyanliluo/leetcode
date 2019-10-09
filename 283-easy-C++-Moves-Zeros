@@ -48,7 +48,7 @@ void moveZeroes(vector<int>& nums) {
 }
 
 #solutions
-双指针方法2 - 时间复杂度更慢一点儿
+1.双指针方法2 - 时间复杂度更慢一点儿
 链接：https://leetcode-cn.com/problems/move-zeroes/solution/yi-dong-ling-by-leetcode/
 void moveZeroes(vector<int>& nums) {
     int lastNonZeroFoundAt = 0;
@@ -68,3 +68,23 @@ void moveZeroes(vector<int>& nums) {
 }
 时间复杂度：O(n)。但是，操作仍然是局部优化的。代码执行的总操作（数组写入）为 n（元素总数）。
 空间复杂度：O(1)，只使用常量空间。
+
+2.维护一个count计数0的个数，每个非0数需要移动的步数其实就是这个非0数前面0的个数。
+[0, 1, 0, 3, 2]按我的思路，那就是1需要移动1步，3和2需要移动两步。在完成这三个数的移动后，将后面补0即可。
+链接：https://leetcode-cn.com/problems/move-zeroes/solution/shi-jian-fu-za-du-wei-onde-javajie-fa-by-lyl0724-2/
+#java code
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int count = 0;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] == 0) {
+                count++;
+            }else {
+                nums[i - count] = nums[i];
+            }
+        }
+        for(int i = nums.length - count; i < nums.length; i++) {
+            nums[i] = 0;
+        }
+    }
+}
