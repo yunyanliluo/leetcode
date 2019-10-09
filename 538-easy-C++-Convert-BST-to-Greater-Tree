@@ -1,0 +1,30 @@
+Convert BST to Greater Tree
+把二叉搜索树转换为累加树
+https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
+
+#solutions
+因为BST满足左子树<当前节点<右子树的规律，可以采用后序遍历解决
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* convertBST(TreeNode* root) {
+        if(root==NULL) return root;
+        convertBST(root->right);
+        temp += root->val;
+        root->val = temp;
+        convertBST(root->left);
+        return root;
+    }
+private:
+    int temp=0;
+};
+执行用时 :60 ms, 在所有 C++ 提交中击败了47.97%的用户
+内存消耗 :23.5 MB, 在所有 C++ 提交中击败了86.07%的用户
