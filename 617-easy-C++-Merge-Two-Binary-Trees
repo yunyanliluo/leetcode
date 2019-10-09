@@ -1,0 +1,33 @@
+Merge Two Binary Trees
+对应节点val值相加。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/merge-two-binary-trees
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#solutions
+#递归
+Om或On，Ologn
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* mergeTrees(TreeNode* t1, TreeNode* t2) {
+        //if(t1==NULL&&t2==NULL) return NULL; //已经被包含在下面两种情况里面了
+        if(t1==NULL) return t2;
+        if(t2==NULL) return t1;
+        t1->val += t2->val;
+        t1->left = mergeTrees(t1->left, t2->left);
+        t1->right = mergeTrees(t1->right, t2->right);
+        return t1;
+    }
+};
+执行用时 :44 ms, 在所有 C++ 提交中击败了93.81%的用户
+内存消耗 :13.3 MB, 在所有 C++ 提交中击败了99.55%的用户
