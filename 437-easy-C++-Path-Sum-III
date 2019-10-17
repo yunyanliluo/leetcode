@@ -1,0 +1,81 @@
+Path Sum III
+You are given a binary tree in which each node contains an integer value.
+Find the number of paths that sum to a given value.
+The path does not need to start or end at the root or a leaf, but it must go downwards (traveling only from parent nodes to child nodes).
+The tree has no more than 1,000 nodes and the values are in the range -1,000,000 to 1,000,000.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/path-sum-iii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#my answer
+#DFS+回溯
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int pathSum(TreeNode* root, int sum) {
+        if(root==NULL) return count;
+        pathsum+=root->val;
+        if(pathsum==sum) ++count;
+        for(vector<int>::iterator iter=parentsPathSum.begin();iter!=parentsPathSum.end();++iter)
+        {
+            if(pathsum-*iter==sum) ++count;
+        }
+        parentsPathSum.push_back(pathsum);
+        pathSum(root->left, sum);
+        pathSum(root->right, sum);
+        parentsPathSum.pop_back();
+        pathsum-=root->val;
+        return count;
+    }
+private:
+    vector<int> parentsPathSum;
+    int pathsum=0;
+    int count=0;
+};
+执行用时 :24 ms, 在所有 cpp 提交中击败了93.66%的用户
+内存消耗 :15 MB, 在所有 cpp 提交中击败了69.11%的用户
+
+#solutions
+类似的方法.
+少了一个类变量，放在函数中，由正向遍历parents数组变成了反向，由-变成+。感觉思路更简洁了一点点。
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int pathSum(TreeNode* root, int sum) {
+        if(root==NULL) return count;
+        int pathsum=root->val;
+        if(pathsum==sum) ++count;
+        for(vector<int>::reverse_iterator riter=parentsVal.rbegin();riter!=parentsVal.rend();++riter)
+        {
+            pathsum+=*riter;
+            if(pathsum==sum) ++count;
+        }
+        parentsVal.push_back(root->val); 
+        pathSum(root->left, sum);
+        pathSum(root->right, sum);
+        parentsVal.pop_back();
+        return count;
+    }
+private:
+    vector<int> parentsVal;
+    int count=0;
+};
+执行用时 :52 ms, 在所有 cpp 提交中击败了33.24%的用户
+内存消耗 :15.2 MB, 在所有 cpp 提交中击败了50.81%的用户
