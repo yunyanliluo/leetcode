@@ -1,7 +1,12 @@
 Diameter of Binary Tree
+Given a binary tree, you need to compute the length of the diameter of the tree. The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/diameter-of-binary-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 
 #my answer
-#
+#递归调用。过根节点的最长路径，等于左子树的高度+右子树的高度。然后递归求过左右子树根节点的最长路径。
 /**
  * Definition for a binary tree node.
  * struct TreeNode {
