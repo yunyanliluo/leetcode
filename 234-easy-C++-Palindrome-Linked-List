@@ -1,0 +1,62 @@
+Palindrome Linked List
+Given a singly linked list, determine if it is a palindrome.
+
+#my answer
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        vector<int> vals;
+        ListNode* p=head; 
+        for(;p!=NULL;p=p->next)
+        {
+            vals.push_back(p->val);
+        }
+        vector<int> revVals=vals;
+        reverse(revVals.begin(), revVals.end());
+        if(vals==revVals) return true;
+        return false;
+    }
+};
+执行用时 :24 ms, 在所有 cpp 提交中击败了88.53%的用户
+内存消耗 :13.7 MB, 在所有 cpp 提交中击败了6.38%的用户
+
+#solutions
+#improvement
+将上述方法的第二个数组去掉，改成for循环进行vals首尾比对
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        vector<int> vals;
+        ListNode* p=head; 
+        for(;p!=NULL;p=p->next)
+        {
+            vals.push_back(p->val);
+        }
+        for(int i=0,j=vals.size()-1;i<j;++i,--j)
+        {
+            if(vals[i]!=vals[j]) return false;
+        }
+        return true;
+    }
+};
+执行用时 :28 ms, 在所有 cpp 提交中击败了71.44%的用户
+内存消耗 :13.2 MB, 在所有 cpp 提交中击败了22.92%的用户
+
+#快慢指针+翻转链表
+#时间On，空间O1
