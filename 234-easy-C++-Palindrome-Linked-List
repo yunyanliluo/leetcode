@@ -60,3 +60,45 @@ public:
 
 #快慢指针+翻转链表
 #时间On，空间O1
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        if(head==NULL||head->next==NULL) return true;
+        //find the middle node
+        ListNode *f=head, *s=head, *secondHalfHead;
+        bool isOdd=false;
+        while(f->next!=NULL&&f->next->next!=NULL)
+        {
+            f=f->next->next;
+            s=s->next;
+        }
+        secondHalfHead=s->next;
+        if(f->next==NULL) isOdd=true;
+        //reverse the first half linked list
+        ListNode *firstHalfHead, *p,*q,*r;
+        p=head;q=head->next;head->next=NULL;
+        while(p!=s) 
+        {
+            r=q->next;
+            q->next=p;
+            p=q;q=r;
+        }
+        if(isOdd) firstHalfHead=p->next;
+        else firstHalfHead=p;
+        for(p=firstHalfHead,q=secondHalfHead; q;p=p->next,q=q->next)
+        {
+            if(p->val!=q->val) return false;
+        }
+        return true;
+    }
+};
+执行用时 :20 ms, 在所有 cpp 提交中击败了96.39%的用户
+内存消耗 :12.3 MB, 在所有 cpp 提交中击败了95.84%的用户
