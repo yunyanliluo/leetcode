@@ -1,0 +1,133 @@
+Shortest Unsorted Continuous Subarray
+Given an integer array, you need to find one continuous subarray that if you only sort this subarray in ascending order, then the whole array will be sorted in ascending order, too.
+You need to find the shortest such subarray and output its length.
+
+Example 1:
+Input: [2, 6, 4, 8, 10, 9, 15]
+Output: 5
+Explanation: You need to sort [6, 4, 8, 10, 9] in ascending order to make the whole array sorted in ascending order.
+
+Note:
+Then length of the input array is in range [1, 10,000].
+The input array may contain duplicates, so ascending order here means <=.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
+#my answer
+#复制数组，排序，从首尾分别对比原数组
+#时间Onlogn，空间On
+class Solution {
+public:
+    int findUnsortedSubarray(vector<int>& nums) {
+        vector<int> sortednums=nums;
+        sort(sortednums.begin(), sortednums.end());
+        int i,j;
+        for(i=0;i<nums.size();++i)
+        {
+            if(nums[i]!=sortednums[i])
+                break;
+        }
+        if(i==nums.size()) return 0;
+        for(j=nums.size()-1;j>=0;--j)
+        {
+            if(nums[j]!=sortednums[j])
+                break;
+        }
+        return j-i+1;
+    }
+};
+执行用时 :60 ms, 在所有 cpp 提交中击败了37.48%的用户
+内存消耗 :11.2 MB, 在所有 cpp 提交中击败了80.58%的用户
+
+#solutions
+#栈
+#时间On，空间On
+链接：https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/solution/zui-duan-wu-xu-lian-xu-zi-shu-zu-by-leetcode/
+这个方法背后的想法仍然是选择排序。我们需要找到无序子数组中最小元素和最大元素分别对应的正确位置，来求得我们想要的无序子数组的边界。
+为了达到这一目的，此方法中，我们使用 栈栈 。我们从头遍历 numsnums 数组，如果遇到的数字大小一直是升序的，我们就不断把对应的下标压入栈中，这么做的目的是因为这些元素在目前都是处于正确的位置上。一旦我们遇到前面的数比后面的数大，也就是 nums[j]nums[j] 比栈顶元素小，我们可以知道 nums[j]nums[j] 一定不在正确的位置上。
+为了找到 nums[j]nums[j] 的正确位置，我们不断将栈顶元素弹出，直到栈顶元素比 nums[j]nums[j] 小，我们假设栈顶元素对应的下标为 kk ，那么我们知道 nums[j]nums[j] 的正确位置下标应该是 k + 1k+1 。
+我们重复这一过程并遍历完整个数组，这样我们可以找到最小的 kk， 它也是无序子数组的左边界。
+类似的，我们逆序遍历一遍 numsnums 数组来找到无序子数组的右边界。这一次我们将降序的元素压入栈中，如果遇到一个升序的元素，我们像上面所述的方法一样不断将栈顶元素弹出，直到找到一个更大的元素，以此找到无序子数组的右边界。
+我们可以看下图作为参考。我们观察到上升还是下降决定了相对顺序，我们还可以观察到指针 bb 在下标 0 后面标记着无序子数组的左边界，指针 aa 在下标 7 前面标记着无序子数组的右边界。
+#java code
+public class Solution {
+    public int findUnsortedSubarray(int[] nums) {
+        Stack < Integer > stack = new Stack < Integer > ();
+        int l = nums.length, r = 0;
+        for (int i = 0; i < nums.length; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] > nums[i])
+                l = Math.min(l, stack.pop());
+            stack.push(i);
+        }
+        stack.clear();
+        for (int i = nums.length - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[stack.peek()] < nums[i])
+                r = Math.max(r, stack.pop());
+            stack.push(i);
+        }
+        return r - l > 0 ? r - l + 1 : 0;
+    }
+}
+
+#找min，max
+https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/solution/zui-duan-wu-xu-lian-xu-zi-shu-zu-by-leetcode/
+#时间On，空间O1
+class Solution {
+public:
+    int findUnsortedSubarray(vector<int>& nums) {
+        int i,j,min_i,max_j;
+        int n=nums.size();
+        if(n<=1) return 0;
+        for(i=0;i<n-1;++i)
+        {
+            if(nums[i]>nums[i+1]) break;
+        }
+        if(i==n-1) return 0;//丢了这一行，那么假如原数组从头到尾升序，则下面出现数组下标越界情况
+        for(i+=2,min_i=nums[i-1];i<n;++i)
+        {
+            min_i=min(min_i,nums[i]);
+        }
+        for(j=n-1;j>0;--j)
+        {
+            if(nums[j]<nums[j-1]) break;
+        }
+        for(j-=2,max_j=nums[j+1];j>=0;--j)
+        {
+            max_j=max(max_j,nums[j]);
+        }
+        for(i=0;i<n;++i)
+            if(nums[i]>min_i) break;
+        for(j=n-1;j>=0;--j)
+            if(nums[j]<max_j) break;
+        return j-i+1;
+    }
+};
+执行用时 :32 ms, 在所有 cpp 提交中击败了95.06%的用户
+内存消耗 :10.3 MB, 在所有 cpp 提交中击败了98.56%的用户
+
+#逆序计数
+#时间On，空间O1
+链接：https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/solution/bu-pai-xu-shi-xian-by-jin-mu-yan-3/
+每次从左往右判断i(下标)位置是否比前i个的最大值大，如果是则说明位置在这i + 1中正确,假设不是，则说明
+位置不对，因为从小到大，i位置应该这i + 1中最大才符合要求。不对记录下右边界索引，如果后面都是比i位置大正确排序则i就是最右的索引了。
+从右往左同理。
+class Solution {
+public:
+    int findUnsortedSubarray(vector<int>& nums) {
+        int m = nums[0], n = nums.back(), l = -1, r = -2;
+        int len = nums.size();
+        for (int i = 1; i < len; ++i)
+        {
+            m = max(m, nums[i]);
+            n = min(n, nums[len - 1 - i]);
+            if (m != nums[i]) r = i;
+            if (n != nums[len - 1 - i]) l = len - 1 - i;
+        }
+        return r - l + 1;
+    }
+};
+执行用时 :48 ms, 在所有 cpp 提交中击败了65.31%的用户
+内存消耗 :10.3 MB, 在所有 cpp 提交中击败了97.12%的用户
