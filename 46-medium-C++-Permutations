@@ -1,0 +1,245 @@
+Permutations
+Given a collection of distinct integers, return all possible permutations.
+
+Example:
+Input: [1,2,3]
+Output:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/permutations
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#my answer
+#回溯法
+#使用引用传参会比较快
+class Solution {
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> res;
+        vector<int> tempres;
+        BackTrack(nums, tempres, res);
+        return res;
+    }
+    void BackTrack(vector<int>& nums, vector<int>& tempres, vector<vector<int>>& res)
+    {
+        if(nums.size()==0)
+        {
+            res.push_back(tempres);
+            return;
+        }
+        for(int i=0;i<nums.size();++i)
+        {
+            int temp=nums[i];
+            tempres.push_back(temp);
+            nums.erase(nums.begin()+i);
+            BackTrack(nums, tempres, res);
+            tempres.pop_back();
+            nums.insert(nums.begin()+i, temp);
+        }       
+    }
+};
+执行用时 :16 ms, 在所有 cpp 提交中击败了81.86%的用户
+内存消耗 :9.2 MB, 在所有 cpp 提交中击败了82.85%的用户
+
+#solutions
+
+#improvements
+#不需要将nums数组不断添加和删除元素的3种方法
+3种方法全部来自链接：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/
+
+#1.使用visited数组记录nums中当前元素是否被使用过，在递归中判断visited[i]==0/1即可知道这个元素是否被使用过，
+节省了数组添加和删除操作中移动数组元素的时间，但是增加了判断visited数组和遍历visited数组的时间
+#java code
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+public class Solution {
+
+
+    // curSize 表示当前的路径 path 里面有多少个元素
+
+    private void generatePermution(int[] nums, boolean[] visited, int curSize, int len, Stack<Integer> path, List<List<Integer>> res) {
+        if (curSize == len) {
+            // 此时 path 已经保存了 nums 中的所有数字，已经成为了一个排列
+            res.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = 0; i < len; i++) {
+            if (!visited[i]) {
+                path.push(nums[i]);
+                visited[i] = true;
+                generatePermution(nums, visited, curSize + 1, len, path, res);
+                // 刚开始接触回溯算法的时候常常会忽略状态重置
+                // 回溯的时候，一定要记得状态重置
+                path.pop();
+                visited[i] = false;
+            }
+        }
+    }
+
+    public List<List<Integer>> permute(int[] nums) {
+        int len = nums.length;
+        List<List<Integer>> res = new ArrayList<>();
+        boolean[] used = new boolean[len];
+        if (len == 0) {
+            return res;
+        }
+        generatePermution(nums, used, 0, len, new Stack<>(), res);
+        return res;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = new int[]{1, 2, 3, 4};
+        Solution solution = new Solution();
+        List<List<Integer>> permute = solution.permute(nums);
+        for (int i = 0; i < permute.size(); i++) {
+            System.out.println(permute.get(i));
+        }
+    }
+}
+
+#2.使用哈希表代替visited数组
+#java code
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+
+
+public class Solution {
+
+    public List<List<Integer>> permute(int[] nums) {
+        int len = nums.length;
+
+        List<List<Integer>> res = new ArrayList<>();
+        if (len == 0) {
+            return res;
+        }
+
+        // 使用哈希表检测一个数字是否使用过
+        Set<Integer> used = new HashSet<>();
+        Stack<Integer> stack = new Stack<>();  # 使用stack和使用vector目的一样，在python中stack导入ArrayList很方便
+
+        backtrack(nums, 0, len, used, stack, res);
+        return res;
+    }
+
+    private void backtrack(int[] nums, int depth, int len, Set<Integer> used, Stack<Integer> stack, List<List<Integer>> res) {
+        if (depth == len) {
+            res.add(new ArrayList<>(stack));
+            return;
+        }
+
+        for (int i = 0; i < len; i++) {
+            if (!used.contains(i)) {
+                used.add(i);
+                stack.push(nums[i]);
+
+                backtrack(nums, depth + 1, len, used, stack, res);
+
+                stack.pop();
+                used.remove(i);
+            }
+        }
+    }
+}
+
+#3.使用位掩码代替 used 数组。这个技巧对于数组 nums 不超过 3232 位时有效。
+#python code
+from typing import List
+
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        size = len(nums)
+        if size == 0:
+            return []
+
+        # used = [False] * len(nums)
+        state = 0
+        res = []
+        self.__dfs(nums, 0, size, [], state, res)
+        return res
+
+    def __dfs(self, nums, index, size, pre, state, res):
+        # 先写递归终止条件
+        if index == size:
+            res.append(pre[:])
+            return
+
+        for i in range(size):
+            if ((state >> i) & 1) == 0:
+                # 如果没有用过，就用它
+                state ^= (1 << i)  # 异或操作
+                pre.append(nums[i])
+
+                # 在 dfs 前后，代码是对称的
+                self.__dfs(nums, index + 1, size, pre, state, res)
+                # 状态重置
+                state ^= (1 << i)
+                pre.pop()
+
+
+if __name__ == '__main__':
+    s = Solution()
+    nums = [1, 2, 3]
+    result = s.permute(nums)
+    print(result)
+
+
+#python库函数
+作者：powcai
+链接：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-by-powcai-2/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+def permute(self, nums: List[int]) -> List[List[int]]:
+        return list(itertools.permutations(nums))
+
+#递归交换数组元素
+链接：https://leetcode-cn.com/problems/permutations/solution/quan-pai-lie-by-leetcode/
+这里有一个回溯函数，使用第一个整数的索引作为参数 backtrack(first)。
+如果第一个整数有索引 n，意味着当前排列已完成。
+遍历索引 first 到索引 n - 1 的所有整数。Iterate over the integers from index first to index n - 1.
+在排列中放置第 i 个整数，
+即 swap(nums[first], nums[i]).
+继续生成从第 i 个整数开始的所有排列: backtrack(first + 1).
+现在回溯，即通过 swap(nums[first], nums[i]) 还原.
+
+#C++ code
+链接：https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-c-by-she-wo-qi-shui/
+执行用时 : 16 ms, 在Permutations的C++提交中击败了96.82% 的用户
+内存消耗 : 9 MB, 在Permutations的C++提交中击败了94.99% 的用户
+class Solution {
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> res;
+        backtrack(nums,res,0);
+        return res;
+    }
+    void swap(int &a,int &b)
+  {
+      int temp;
+      temp=a;
+      a=b;
+      b=temp;
+  }
+     void backtrack(vector<int> &nums,vector<vector<int>> &res,int i){
+         if(i==nums.size())
+             res.push_back(nums);
+         for(int j=i;j<nums.size();j++){
+             swap(nums[i],nums[j]);
+             backtrack(nums,res,i+1);
+             swap(nums[i],nums[j]);
+         }
+     }
+};
