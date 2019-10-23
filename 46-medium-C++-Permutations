@@ -19,7 +19,7 @@ Output:
 
 #my answer
 #回溯法
-#使用引用传参会比较快
+#使用引用传参会比较快。（类似地，使用类变量也比较快。）
 class Solution {
 public:
     vector<vector<int>> permute(vector<int>& nums) {
