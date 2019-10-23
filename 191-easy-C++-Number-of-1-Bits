@@ -1,0 +1,77 @@
+Number of 1 Bits
+Write a function that takes an unsigned integer and return the number of '1' bits it has (also known as the Hamming weight).
+
+Example 1:
+Input: 00000000000000000000000000001011
+Output: 3
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/number-of-1-bits
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#my answer
+1.慢
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int hw=0;
+        while (n!=0)
+        {
+            hw+=(n%2);
+            n/=2;
+        }
+        return hw;
+    }
+};
+
+2.【优】循环移位，&1，判断为1/0
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int hw=0;
+        while (n!=0)
+        {
+            if(n&1) ++hw;
+            n=n>>1;
+        }
+        return hw;
+    }
+};
+执行用时 :0 ms, 在所有 cpp 提交中击败了100.00%的用户
+内存消耗 :8.1 MB, 在所有 cpp 提交中击败了57.92%的用户
+
+#solutions
+1.n&=(n-1)将最末尾1转成0
+https://leetcode-cn.com/problems/number-of-1-bits/solution/wei-1de-ge-shu-by-leetcode/
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int count=0;
+        while(n!=0)
+        {
+            n&=(n-1);
+            ++count;
+        }
+        return count;
+    }
+};
+
+2.【优】移位操作快
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+	int m = 0;
+	uint32_t n0 = n;
+	while (1) {
+		n0 = n0 >> 1;
+		n0 = n0 << 1;
+		if (n > n0)
+			m++;
+		if (n == 0)
+			break;
+		n = n >> 1;
+		n0=n0 >> 1;
+	}
+	return m;
+    }
+};
