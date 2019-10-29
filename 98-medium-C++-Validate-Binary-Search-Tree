@@ -1,0 +1,105 @@
+Validate Binary Search Tree
+Given a binary tree, determine if it is a valid binary search tree (BST).
+
+Assume a BST is defined as follows:
+
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/validate-binary-search-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#my answer
+#中序遍历
+#On, O1
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        bool isFirstNode=true;
+        int temp;
+        return MiddleOrder(root, temp, isFirstNode);
+    }
+    bool MiddleOrder(TreeNode* root, int& temp, bool& isFirstNode)
+    {
+        if(root==NULL) return true;
+        if(!MiddleOrder(root->left, temp, isFirstNode)) return false;
+        if(!isFirstNode&&root->val<=temp)
+        {
+            return false;
+        }
+        else
+        {
+            temp=root->val;
+            isFirstNode=false;
+        }
+        if(!MiddleOrder(root->right, temp, isFirstNode)) return false;
+        return true;
+    }
+};
+
+#solutions
+#中序遍历的栈实现（迭代）
+#On, O1
+#java code
+class Solution {
+  public boolean isValidBST(TreeNode root) {
+    Stack<TreeNode> stack = new Stack();
+    double inorder = - Double.MAX_VALUE;
+
+    while (!stack.isEmpty() || root != null) {
+      while (root != null) {
+        stack.push(root);
+        root = root.left;
+      }
+      root = stack.pop();
+      // If next element in inorder traversal
+      // is smaller than the previous one
+      // that's not BST.
+      if (root.val <= inorder) return false;
+      inorder = root.val;
+      root = root.right;
+    }
+    return true;
+  }
+}
+
+作者：LeetCode
+链接：https://leetcode-cn.com/problems/validate-binary-search-tree/solution/yan-zheng-er-cha-sou-suo-shu-by-leetcode/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+#利用最大最小值
+#python code
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def isValidBST(self, root: TreeNode) -> bool:
+        def isBST(root, min_val, max_val):
+            if root == None:
+                return True
+            # print(root.val)
+            if root.val >= max_val or root.val <= min_val:
+                return False
+            return isBST(root.left, min_val, root.val) and isBST(root.right, root.val, max_val)
+        return isBST(root, float("-inf"), float("inf"))
+
+作者：powcai
+链接：https://leetcode-cn.com/problems/validate-binary-search-tree/solution/die-dai-yu-di-gui-by-powcai/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
