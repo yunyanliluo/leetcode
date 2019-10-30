@@ -1,0 +1,167 @@
+Container With Most Water
+Given n non-negative integers a1, a2, ..., an , where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
+Note: You may not slant the container and n is at least 2.
+The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7]. In this case, the max area of water (blue section) the container can contain is 49.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/container-with-most-water
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+#my answer
+V=min(a_i1,a_i2)*(i_2-i_1)
+
+#1.双重循环,遍历每个height[i]，找到比它高的距离它最远的那个height[j]，计算dist=abs(i,j)，那么maxArea=max(maxArea, height[i]*dist).
+#On^2, O1, 超出时间限制
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        //V=min(a_i1,a_i2)*(i_2-i_1)
+        int n=height.size();
+        int maxAreaValue=0;
+        for(int i=0;i<n;++i)
+        {
+            int dist=0;
+            for(int j=0;j<n;++j)
+            {
+                if(height[j]<height[i]) continue;
+                dist=max(dist, abs(j-i));
+            }
+            maxAreaValue=max(maxAreaValue, height[i]*dist);
+        }
+        return maxAreaValue;
+    }
+};
+
+#1.improvement - from solutions
+不管是比它高还是矮，也不管距离远还是近，直接代入面积公式求解
+#On^2(C_n_2), O1
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        //V=min(a_i1,a_i2)*(i_2-i_1)
+        int n=height.size();
+        int maxAreaValue=0;
+        for(int i=0;i<n;++i)
+        {
+            for(int j=i+1;j<n;++j)
+            {
+                maxAreaValue=max(maxAreaValue, min(height[j], height[i])*(j-i));
+            }
+        }
+        return maxAreaValue;
+    }
+};
+执行用时 :2604 ms, 在所有 cpp 提交中击败了5.02%的用户
+内存消耗 :9.8 MB, 在所有 cpp 提交中击败了77.76%的用户
+
+#2.双指针
+#On，On
+遍历第一遍，找到全局max，
+遍历第二遍，筛选出来一些点（将具有从左顺序递增直至全局max，再顺序下降直至结束的规律的点截选出来），
+遍历第三（和四）遍，在具有先递增后递减的子数列中寻找比每一个height[i]高的最远的一个height[j]，计算maxArea是否需要更新。
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int n=height.size();
+        int maxArea=0;
+        //no.1遍历
+        int maxHt=0, maxHtPos=-1;
+        for(int i=0;i<n;++i)
+        {
+            if(height[i]>maxHt)
+            {
+                maxHt=height[i];
+                maxHtPos=i;
+            }
+        }
+        //no.2遍历
+        vector<int> lPoints, rPoints;
+        lPoints.push_back(0);
+        rPoints.push_back(n-1);
+        int lMax=height[0], rMax=height.back();
+        for(int i=1;i<maxHtPos;++i)
+        {
+            if(height[i]>lMax)
+            {
+                lPoints.push_back(i);
+                lMax=height[i];
+            }
+        }
+        for(int j=n-1;j>maxHtPos;--j)
+        {
+            if(height[j]>rMax)
+            {
+                rPoints.push_back(j);
+                rMax=height[j];
+            }
+        }
+        lPoints.push_back(maxHtPos);
+        rPoints.push_back(maxHtPos);
+        //no.3&no.4遍历
+        int i=0,j=0;
+        for(;i<lPoints.size()-1;++i)
+        {
+            while(height[rPoints[j]]<height[lPoints[i]]) ++j;
+            int dist=rPoints[j]-lPoints[i];
+            maxArea=max(maxArea, dist*height[lPoints[i]]);
+        }
+        for(i=0,j=0;j<rPoints.size()-1;++j)
+        {
+            while(height[rPoints[j]]>height[lPoints[i]]) ++i;
+            int dist=rPoints[j]-lPoints[i];
+            maxArea=max(maxArea, dist*height[rPoints[j]]);
+        }
+        return maxArea;
+    }
+};
+执行用时 :16 ms, 在所有 cpp 提交中击败了95.63%的用户
+内存消耗 :10.2 MB, 在所有 cpp 提交中击败了5.63%的用户
+
+#2.improvement - from solutions
+#On, O1
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int n=height.size();
+        int maxArea=0;
+        int i=0, j=n-1;
+        while(i<j)
+        {
+            int minHt=0;
+            if(height[i]<height[j])
+            {
+                minHt=height[i];
+                ++i;
+            }
+            else
+            {
+                minHt=height[j];
+                --j;
+            }
+            maxArea=max(maxArea, minHt*(j-i+1));
+        }
+        return maxArea;
+    }
+};
+执行用时 :16 ms, 在所有 cpp 提交中击败了95.63%的用户
+内存消耗 :9.7 MB, 在所有 cpp 提交中击败了89.16%的用户
+
+#2.improvement2 - from solutions
+使用min()比使用if……else……赋值处理要快
+#On, O1
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int maxArea=0;
+        int i=0, j=height.size()-1;
+        while(i<j)
+        {
+            maxArea=max(maxArea, min(height[i], height[j])*(j-i)); 
+            if(height[i]<height[j]) ++i;
+            else --j;
+        }
+        return maxArea;
+    }
+};
+执行用时 :12 ms, 在所有 cpp 提交中击败了99.52%的用户
+内存消耗 :9.7 MB, 在所有 cpp 提交中击败了83.10%的用户
