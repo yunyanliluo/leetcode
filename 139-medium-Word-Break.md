@@ -203,3 +203,58 @@ public:
 ```
 执行用时 :20 ms, 在所有 C++ 提交中击败了52.11%的用户
 内存消耗 :14.3 MB, 在所有 C++ 提交中击败了35.73%的用户
+
+## DP的改进
+
+C++ code
+```
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        int n=s.size();
+        vector<bool> dp(n+1,false);//1.dp初始化和赋值可以使用vector写在一起
+        dp[0]=true;
+        int maxLen=0;//2.记录最长单词长度。每一个dp一定是前面+最后一个单词，而最后一个单词长度至多为maxLen，这样大大节约了遍历时间
+        for(int i=0;i<wordDict.size();++i)
+            maxLen=max(maxLen, (int)wordDict[i].size());
+        for(int i=1;i<=n;++i) {
+            for(int j=max(i-maxLen, 0);j<i;++j) {//节约了这里的遍历时间
+                if(dp[j]&&find(wordDict.begin(), wordDict.end(), s.substr(j, i-j))!=wordDict.end()) {
+                    dp[i]=true; 
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+};
+```
+执行用时 :4 ms, 在所有 C++ 提交中击败了96.65%的用户
+内存消耗 :9 MB, 在所有 C++ 提交中击败了76.48%的用户
+
+再次改进
+```
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        int n=s.size();
+        vector<bool> dp(n+1,false);//1.dp初始化和赋值可以使用vector写在一起
+        unordered_set<string> st(wordDict.begin(), wordDict.end());//3.使用哈希集合加速查找，会浪费空间但是经测试这个空间极小
+        dp[0]=true;
+        int maxLen=0;//2.记录最长单词长度。每一个dp一定是前面+最后一个单词，而最后一个单词长度至多为maxLen，这样大大节约了遍历时间
+        for(int i=0;i<wordDict.size();++i)
+            maxLen=max(maxLen, (int)wordDict[i].size());
+        for(int i=1;i<=n;++i) {
+            for(int j=max(i-maxLen, 0);j<i;++j) {//节约了这里的遍历时间
+                if(dp[j]&&st.find(s.substr(j, i-j))!=st.end()) {
+                    dp[i]=true; 
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+};
+```
+执行用时 :0 ms, 在所有 C++ 提交中击败了100.00%的用户
+内存消耗 :9.2 MB, 在所有 C++ 提交中击败了75.86%的用户
