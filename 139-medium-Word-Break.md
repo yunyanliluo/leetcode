@@ -115,6 +115,7 @@ private:
 
 一种加速
 单词长度每次+1，因此可以记住上一次查找到的节点位置，继续查找下一个字母。
+C++ code
 ```
 class Solution {
 public:
@@ -177,4 +178,28 @@ private:
 ```
 
 ## DP
-最后，
+最后，还是使用DP解决问题，其实这道是DP题。
+
+C++ code
+```
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        int n=s.size();
+        bool dp[n+1];
+        dp[0]=true;//不妨认为空字符串总在字典中
+        for(int i=1;i<=n;++i) {//考虑从0起始长度为i的子字符串
+            dp[i]=false;
+            for(int j=1;j<=i;++j) {//如果从0至j和从j至i都在字典中，则true
+                if(dp[j-1]&&find(wordDict.begin(), wordDict.end(), s.substr(j-1, i-j+1))!=wordDict.end()) {
+                    dp[i]=true; 
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+};
+```
+执行用时 :20 ms, 在所有 C++ 提交中击败了52.11%的用户
+内存消耗 :14.3 MB, 在所有 C++ 提交中击败了35.73%的用户
