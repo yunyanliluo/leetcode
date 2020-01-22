@@ -253,3 +253,56 @@ private:
 执行用时 :76 ms, 在所有 C++ 提交中击败了82.79%的用户
 
 内存消耗 :44.8 MB, 在所有 C++ 提交中击败了57.97%的用户
+
+## 一份清爽的trienode模板
+C++ code，感谢：https://leetcode-cn.com/problems/implement-trie-prefix-tree/solution/shi-xian-trie-qian-zhui-shu-by-leetcode/151430
+```
+class Trie {
+private:
+	bool is_string = false;
+	Trie* next[26] = { nullptr };
+public:
+	Trie() {}
+
+	void insert(const string& word)//插入单词
+	{
+		Trie* root = this;
+		for (const auto& w : word) {
+			if (root->next[w - 'a'] == nullptr) root->next[w - 'a'] = new Trie();
+			root = root->next[w - 'a'];
+		}
+		root->is_string = true;
+	}
+
+	bool search(const string& word)//查找单词
+	{
+		Trie* root = this;
+		for (const auto& w : word) {
+			if (root->next[w - 'a'] == nullptr) return false;
+			root = root->next[w - 'a'];
+		}
+		return root->is_string;
+	}
+
+	bool startsWith(string prefix)//查找前缀
+	{
+		Trie* root = this;
+		for (const auto& p : prefix) {
+			if (root->next[p - 'a'] == nullptr) return false;
+			root = root->next[p - 'a'];
+		}
+		return true;
+	}
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
+ ```
+执行用时 :72 ms, 在所有 C++ 提交中击败了90.22%的用户
+
+内存消耗 :45 MB, 在所有 C++ 提交中击败了28.29%的用户
