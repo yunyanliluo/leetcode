@@ -17,6 +17,43 @@ https://leetcode-cn.com/problems/longest-consecutive-sequence/
 
 由于哈希集合的插入和查询都是O（1），因此将vector倒入是O（n），遍历查询是O（n）。总的时间复杂度是O（n）。空间O（n）。
 
+更新
+
+C++ code
+```
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        if(nums.size()==0) return 0;
+        unordered_set<int> st(nums.begin(), nums.end());
+        int maxLen=1;
+        for(int num:st) {
+            if(st.find(num-1)==st.end()) {
+                int cur=num+1;
+                while(st.find(cur)!=st.end()) {
+                    ++cur;
+                }
+                maxLen=max(maxLen, cur-num);
+            }
+        }
+        return maxLen;
+    }
+};
+```
+执行用时 :
+4 ms
+, 在所有 C++ 提交中击败了
+100.00%
+的用户
+
+内存消耗 :
+10.1 MB
+, 在所有 C++ 提交中击败了
+39.80%
+的用户
+
+原答案
+
 C++ code
 ```
 class Solution {
