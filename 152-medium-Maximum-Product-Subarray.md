@@ -65,7 +65,7 @@ public:
         int minP = nums[0];
 
         for (int i = 1; i < nums.size(); i++) {
-            int temp = maxP;
+            int temp = maxP; //用来暂存maxP，以便更改以后还能使用这个值
             maxP = max(max(maxP * nums[i], nums[i]), minP * nums[i]);
             minP = min(min(temp * nums[i], nums[i]), minP * nums[i]);
             res = max(res, maxP);
@@ -75,6 +75,17 @@ public:
     }
 };
 ```
+执行用时 :
+0 ms
+, 在所有 C++ 提交中击败了
+100.00%
+的用户
+
+内存消耗 :
+9.3 MB
+, 在所有 C++ 提交中击败了
+7.72%
+的用户
 
 原答案
 C++ code
