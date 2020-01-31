@@ -168,3 +168,41 @@ while (right < s.size()) {
 来源：力扣（LeetCode）
 
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+## 质数乘积法
+
+受到8ms的答案
+
+C++ code
+```
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        vector<int> output;
+        if (s.size()<p.size()) return output;
+        int *hashset=new int[26]{0};
+        for (int i=0;i<26;i++){
+            hashset[i]=rand()%10000;
+        }
+        int phashsum=0;
+        for (int i=0;i<p.size();i++){
+            phashsum+=hashset[p[i]-'a'];
+        }
+        int shashsum=0;
+        for (int i=s.size()-1;i>s.size()-1-p.size();i--){
+            shashsum+=hashset[s[i]-'a'];
+        }
+        if (shashsum==phashsum) output.push_back(s.size()-p.size());
+        for (int i=s.size()-p.size()-1;i>=0;i--){
+            shashsum=shashsum-hashset[s[i+p.size()]-'a']+hashset[s[i]-'a'];
+            if (shashsum==phashsum) output.push_back(i);
+        }
+        return output;
+    }
+};
+```
+的启发，这个答案很trick也很凑巧，并不严谨，
+
+但是可以使用质数2～101表示26个字母，判断乘积是否相等。
+
+但注意，加法比乘法快。乘法并且可能long long int。
