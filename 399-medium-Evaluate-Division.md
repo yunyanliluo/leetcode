@@ -207,3 +207,78 @@ public:
 , 在所有 C++ 提交中击败了
 5.23%
 的用户
+
+## BFS/DFS
+参考：https://leetcode-cn.com/problems/evaluate-division/solution/bfsyi-ci-gao-ding-shi-jian-100-by-tomwillow/
+构造一个双向图，比如a/b=2.0，那么a->b权重2.0，b->a权重0.5，要查的时候就用BFS遍历，每到一个新节点，就乘以权重，找到目标节点时返回当前值即可。
+
+首先，我们分析一下要怎么判断。没有出现过的字母直接返回-1.0，然后一样的字母直接返回1.0。这时就可以计算两点距离了。
+
+参考代码
+```
+class Solution {
+public:
+	unordered_map<string, vector<pair<string, double>>> ump;
+	double getdist(string &a, string &b)
+	{
+		//没出现过直接返回-1.0
+		auto it1 = ump.find(a);
+		auto it2 = ump.find(b);
+		if (it1 == ump.end() || it2 == ump.end())
+			return -1.0;
+
+		//相等直接返回1.0
+		if (a == b)
+			return 1.0;
+
+		//BFS遍历
+		queue<pair<string, double>> Q;
+		Q.push({ a, 1.0 });
+		unordered_map<string, int> vis;
+		vis[a] = 1;
+
+		double ret = -1.0;
+		while (!Q.empty())
+		{
+			auto f = Q.front();
+			Q.pop();
+
+			//记录为已访问
+			vis[f.first] = 1;
+			//已到达目标，返回当前值
+			if (f.first == b)
+			{
+				ret = f.second;
+				break;
+			}
+			for (auto &pr : ump[f.first])
+			{
+				//新节点的值乘上权重
+				if (vis[pr.first] == 0)
+					Q.push({ pr.first, pr.second*f.second });
+			}
+		}
+		return ret;
+	}
+
+	vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+		int n = equations.size();
+		while (n--)
+		{
+			//建立双向图
+			ump[equations[n][0]].push_back({ equations[n][1], values[n] });
+			ump[equations[n][1]].push_back({ equations[n][0], 1.0 / values[n] });
+		}
+
+		vector<double> ret;
+		for (auto &vec : queries)
+			ret.push_back(getdist(vec[0], vec[1]));
+		return ret;
+	}
+};
+
+作者：tomwillow
+链接：https://leetcode-cn.com/problems/evaluate-division/solution/bfsyi-ci-gao-ding-shi-jian-100-by-tomwillow/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
