@@ -25,9 +25,57 @@
 
 C++ code
 ```
-
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        int n=nums.size();
+        if(n==0||k==0) return {};
+        static unordered_map<int, int> cnt; //struct里不能access非静态变量
+        cnt.clear(); //static区域在退出程序时清空，因此有连续多个testcases时，每一个testcase的静态变量会互相影响，需要每次先清空。
+        for(auto& num:nums) {
+            ++cnt[num];
+        }
+        struct node { //用自定义类型做优先队列元素
+            int key;
+            node(int a) {key=a;}
+            bool operator< (const node& a) const {
+                return cnt[key]>cnt[a.key]; //小顶堆 小的在先 
+            }
+        };
+        priority_queue<node> minheap;
+        for(auto& item:cnt) {
+            minheap.push(item.first); //pq的函数：push，pop
+            if(minheap.size()>k) minheap.pop();
+        }
+        vector<int> res;
+        while(!minheap.empty()) {
+            int maxkey=minheap.top().key;
+            res.push_back(maxkey);
+            minheap.pop();
+        }
+        reverse(res.begin(), res.end());
+        return res;
+    }
+};
 ```
+执行用时 :
+24 ms
+, 在所有 C++ 提交中击败了
+59.00%
+的用户
 
+内存消耗 :
+15.8 MB
+, 在所有 C++ 提交中击败了
+5.02%
+的用户
+
+注意：
+- struct里不能access非静态变量
+
+- cnt.clear(); //static区域在退出程序时清空，因此有连续多个testcases时，每一个testcase的静态变量会互相影响，需要每次先清空。
+
+上面用到的数据结构是优先队列，下面做一个用法介绍
 
 ### 优先队列
 定义：priority_queue<Type, Container, Functional>
