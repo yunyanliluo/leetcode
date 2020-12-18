@@ -6,11 +6,17 @@ dfs是从某个位置出发，向其余三个方向行进（使用hashmap来记�
 
 使用hashmap记录每个经过的点
 
-class Point
+自定义class Point
 
 unordered_set<Point>报错：因为哈希表没有自定义Point的hash函数，需要自己定义
     
 建议使用两维哈希表:unordered_map<int, unordered_set<int>>避免上述问题
+    
+注意 机器人需要回溯时必须move回去 不能单纯point赋值
+
+注意 未知地图大小不能使用二维数组/vector，使用哈希表解决
+
+注意 位置需要绝对位置记录 方向也需要绝对方向记录
     
 ```
 /**
