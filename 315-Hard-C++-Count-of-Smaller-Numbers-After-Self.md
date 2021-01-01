@@ -76,8 +76,94 @@ public:
 ```
 
 ## 线段树/树状数组
-TODO
 
+### 线段树
+常用于区间查找
+
+区间查找、区间插入、区间删除都是Ologn
+
+要点：
+
+1. 我使用左右闭包，不过通常使用左闭右开
+
+2. 递归调用，插入的停止条件：min == max （每次插入均到达叶子节点），查找的停止条件：min == m && max == n
+
+3. 查找的提前终止条件：当前节点 count == 0
+
+```
+class Node {
+    public:
+        int min;
+        int max;
+        int count;
+        Node *left, *right;
+        Node(int mi, int ma): min(mi), max(ma), count(0), left(NULL), right(NULL) {}
+        int query(int m, int n) {
+            if (count == 0) {
+                return 0;
+            }
+            if (m == min && n == max) {
+                return count;
+            }
+            int res = 0;
+            int mid = min + (max - min) / 2;
+            if (mid < m && right) {
+                res = right->query(m, n);
+            }
+            else if (mid >= n && left) {
+                res = left->query(m, n);
+            }
+            else {
+                if (left) res += left->query(m, mid);
+                if (right) res += right->query(mid + 1, n);
+            }
+            return res;
+        }
+        int add(int v) {
+            if (v < min || v > max || min > max) {
+                return 1; // 1: ERROR
+            }
+            count ++;
+            if (min != max) {
+                int mid = min + (max - min) / 2;
+                if (mid < v) {
+                    if (!right) {
+                        right = new Node(mid + 1, max); 
+                    }
+                    right -> add (v);
+                }
+                else {
+                    if (!left) {
+                        left = new Node(min, mid); 
+                    }
+                    left -> add (v);
+                }
+            }
+            return 0;
+        }
+};
+
+class Solution {
+public:
+    vector<int> countSmaller(vector<int>& nums) {
+        if (nums.empty()) {
+            return nums;
+        }
+        vector<int> res(nums);
+        int n = nums.size();
+        Node* root = new Node(-10000, 10000);
+        for (int i = n - 1; i >= 0; i--) {
+            int temp = nums[i];
+            res[i] = root->query(-10000, temp - 1);
+            root->add(temp);
+        }
+        return res;
+    }
+};
+```
+Runtime: 20 ms, faster than 80.01% of C++ online submissions for Count of Smaller Numbers After Self.
+
+Memory Usage: 11.6 MB, less than 60.45% of C++ online submissions for Count of Smaller Numbers After Self.
 
 ## 正序遍历
 n^2，TLE（太hard了）
