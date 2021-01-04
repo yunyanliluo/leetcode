@@ -45,7 +45,7 @@ class Solution {
 public:
     class Node {
         public:
-            int min, max, validLen, count;
+            int min, max, validLen, count; // validLen实际上没有用。如果使用validLen，会有最后一个测试样例WA，不明原因。
             Node *left, *right;
             Node(int mi, int ma, int va, int co): min(mi), max(ma), validLen(va), count(co), left(NULL), right(NULL) {}
             void add(int s, int e){
@@ -70,7 +70,7 @@ public:
                     if(left) left -> add(s, mid);
                     right -> add(mid, e);
                 }
-                // if (count == 0) {
+                // if (count == 0) {  // 在query（）中计算有效长度
                 //     validLen = 0;
                 //     if(left) validLen += left->query(); 
                 //     if(right) validLen += right->query();
@@ -84,13 +84,13 @@ public:
                 if (s == e) return;
                 if (s == min && e == max) {
                     count --;
-                    if (count == 0) {
-                        validLen = 0;
-                        if (left) validLen += left->query();
-                        if (right) validLen += right->query();
-                    } else {
-                        validLen = max - min;
-                    }
+                    // if (count == 0) {
+                    //     validLen = 0;
+                    //     if (left) validLen += left->query();
+                    //     if (right) validLen += right->query();
+                    // } else {
+                    //     validLen = max - min;
+                    // }
                     // cout << "line 49: min=" << min << ", max=" << max << ", remove(" << s << "," << e << ") returns " << newLen << endl;
                     return;
                 }
@@ -148,7 +148,7 @@ public:
                 currValidLen = root->query();
                 // cout << "currValidLen: " << currValidLen << endl;
                 area += ( currValidLen * ( temp[0] - currX ) ) % 1000000007;
-                area %= 1000000007;
+                area %= 1000000007; // 这里需要注意要有！！
                 currX = temp[0];
             }
             if (temp[1] == 1) {
@@ -161,4 +161,113 @@ public:
         return area % 1000000007;
     }
 };
+```
+
+炸炸代码 Java
+
+```
+class Solution {
+
+    public int rectangleArea(int[][] rectangles) {
+        int INT_IN = 0;
+        int INT_OUT = 1;
+        if (rectangles.length < 1)
+            return 0;
+
+        PriorityQueue<int[]> events = new PriorityQueue<>((a, b) -> {
+            if (a[0] != b[0])
+                return Integer.compare(a[0], b[0]);
+            return Integer.compare(a[2], b[2]);
+        });
+        long totalArea = 0;
+        int ymin = Integer.MAX_VALUE;
+        int ymax = Integer.MIN_VALUE;
+        for (int i = 0; i < rectangles.length; ++i) {
+            int[] rect = rectangles[i];
+            events.offer(new int[] { rect[0], i, INT_IN });
+            events.offer(new int[] { rect[2], i, INT_OUT });
+            ymax = Math.max(ymax, rect[3]);
+            ymin = Math.min(ymin, rect[1]);
+        }
+
+        SegTreeNode line = new SegTreeNode(ymin, ymax);
+        int height = 0;
+        int x = events.peek()[0];
+        while (!events.isEmpty()) {
+            int[] event = events.poll();
+            totalArea += (long) (event[0] - x) * (long) height;
+
+            int[] rect = rectangles[event[1]];
+            if (event[2] == INT_IN)
+                line.insert(rect[1], rect[3]);
+            else
+                line.delete(rect[1], rect[3]);
+
+            x = event[0];
+            height = line.query();
+        }
+
+        return (int) (totalArea % 1000000007);
+    }
+
+    class SegTreeNode {
+        int start;
+        int mid;
+        int end;
+        int count;
+        SegTreeNode left;
+        SegTreeNode right;
+
+        SegTreeNode(int low, int high) {
+            start = low;
+            end = high;
+            mid = low + (high - low) / 2;
+        }
+
+        void insert(int low, int high) {
+            if (low >= high || low >= end || high <= start)
+                return;
+
+            if (low <= start && high >= end) {
+                ++count;
+                return;
+            }
+
+            if (left == null)
+                left = new SegTreeNode(start, mid);
+            if (right == null)
+                right = new SegTreeNode(mid, end);
+
+            left.insert(low, Math.min(mid, high));
+            right.insert(Math.max(mid, low), high);
+        }
+
+        void delete(int low, int high) {
+            if (low >= high || low >= end || high <= start)
+                return;
+
+            if (low == start && high == end) {
+                count = Math.max(0, count - 1);
+                return;
+            }
+
+            if (left != null)
+                left.delete(low, Math.min(mid, high));
+            if (right != null)
+                right.delete(Math.max(mid, low), high);
+        }
+
+        int query(int low, int high) {
+            if (low <= start && high >= end && count > 0)
+                return end - start;
+
+            return (left != null ? left.query(low, Math.min(mid, high)) : 0)
+                    + (right != null ? right.query(Math.max(mid, low), high) : 0);
+        }
+
+        int query() {
+            return query(start, end);
+        }
+    }
+}
 ```
