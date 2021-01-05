@@ -71,148 +71,13 @@ Memory Usage: 13.9 MB, less than 22.51% of C++ online submissions for Range Sum 
 
 二维线段树：两个中点分割四块
 
-题解 java
-```
-class NumMatrix {
-    private static SegmentTreeNode root;
-    private static int[][] matrix;
+修改：add()的 + -> +=
 
-    private class SegmentTreeNode {
-        int up;
-        int down;
-        int left;
-        int right;
-        int sum;
-        SegmentTreeNode upperLeft;
-        SegmentTreeNode upperRight;
-        SegmentTreeNode lowerLeft;
-        SegmentTreeNode lowerRight;
+终止条件不变：
 
-        public SegmentTreeNode(int up, int down, int left, int right, int sum) {
-            this.up = up;
-            this.down = down;
-            this.left = left;
-            this.right = right;
-            this.sum = sum;
-            this.upperLeft = null;
-            this.upperRight = null;
-            this.lowerLeft = null;
-            this.lowerRight = null;
-        }
-    }
+add(): isLeaf = t == b && l == r;
 
-    public NumMatrix(int[][] matrix) {
-        this.matrix = matrix;
-        if(matrix.length > 0 && matrix[0].length > 0) {
-            int M = matrix.length, N = matrix[0].length;
-            int[][] prefixSum = new int[M + 1][N + 1];
-            for(int i = 1; i <= M; i++) {
-                for(int j = 1; j <= N; j++) {
-                    prefixSum[i][j] = prefixSum[i - 1][j] + prefixSum[i][j - 1] - prefixSum[i - 1][j - 1] + matrix[i - 1][j - 1];
-                }
-            }
-            this.root = createSegmentTree(prefixSum, 0, (M - 1), 0, (N - 1));
-        }
-    }
-
-    private SegmentTreeNode createSegmentTree(int[][] prefixSum, int up, int down, int left, int right) {
-        if(up > down || left > right) {
-            return null;
-        }
-        int sum = prefixSum[down + 1][right + 1] - prefixSum[up][right + 1] - prefixSum[down + 1][left] + prefixSum[up][left];
-        SegmentTreeNode root = new SegmentTreeNode(up, down, left, right, sum);
-        if(up == down && left == right) {
-            return root;
-        }
-        int rowMid = (up + ((down - up) / 2));
-        int colMid = (left + ((right - left) / 2));
-        root.upperLeft = createSegmentTree(prefixSum, up, rowMid, left, colMid);
-        root.upperRight = createSegmentTree(prefixSum, up, rowMid, colMid + 1, right);
-        root.lowerLeft = createSegmentTree(prefixSum, rowMid + 1, down, left, colMid);
-        root.lowerRight = createSegmentTree(prefixSum, rowMid + 1, down, colMid + 1, right);
-        return root;
-    }
-
-    public void update(int row, int col, int val) {
-        int diff = val - matrix[row][col];
-        matrix[row][col] = val;
-        updateSegmentTree(root, row, col, diff);
-    }
-
-    private void updateSegmentTree(SegmentTreeNode root, int row, int col, int diff) {
-        if(root == null) {
-            return;
-        }
-        if(root.up > row || root.down < row || root.left > col || root.right < col) {
-            return;
-        }
-        root.sum += diff;
-        if(root.up == root.down && root.left == root.right) {
-            return;
-        }
-        int rowMid = (root.up + ((root.down - root.up) / 2));
-        int colMid = (root.left + ((root.right - root.left) / 2));
-        if(row <= rowMid) {
-            if(col <= colMid) {
-                updateSegmentTree(root.upperLeft, row, col, diff);
-            } else {
-                updateSegmentTree(root.upperRight, row, col, diff);
-            }
-        }
-        if(col <= colMid) {
-            updateSegmentTree(root.lowerLeft, row, col, diff);
-        } else {
-            updateSegmentTree(root.lowerRight, row, col, diff);
-        }
-    }
-
-    public int sumRegion(int row1, int col1, int row2, int col2) {
-        if(matrix.length == 0 || matrix[0].length == 0) {
-            return 0;
-        }
-        return sumRangeSegmentTree(root, row1, row2, col1, col2);
-    }
-
-    private int sumRangeSegmentTree(SegmentTreeNode root, int up, int down, int left, int right) {
-        if(root == null) {
-            return 0;
-        }
-        if(root.up > down || root.down < up || root.left > right || root.right < left) {
-            return 0;
-        }
-        if(root.up == up && root.down == down && root.left == left && root.right == right) {
-            return root.sum;
-        }
-        int rowMid = (root.up + ((root.down - root.up) / 2));
-        int colMid = (root.left + ((root.right - root.left) / 2));
-        if(down <= rowMid) {
-            if(right <= colMid) {
-                return sumRangeSegmentTree(root.upperLeft, up, down, left, right);
-            } else if(left >= (colMid + 1)) {
-                return sumRangeSegmentTree(root.upperRight, up, down, left, right);
-            } else {
-                return sumRangeSegmentTree(root.upperLeft, up, down, left, colMid) + sumRangeSegmentTree(root.upperRight, up, down, colMid + 1, right);
-            }
-        } else if(up >= (rowMid + 1)) {
-            if(right <= colMid) {
-                return sumRangeSegmentTree(root.lowerLeft, up, down, left, right);
-            } else if(left >= (colMid + 1)) {
-                return sumRangeSegmentTree(root.lowerRight, up, down, left, right);
-            } else {
-                return sumRangeSegmentTree(root.lowerLeft, up, down, left, colMid) + sumRangeSegmentTree(root.lowerRight, up, down, colMid + 1, right);
-            }
-        } else {
-            if(right <= colMid) {
-                return sumRangeSegmentTree(root.upperLeft, up, rowMid, left, right) + sumRangeSegmentTree(root.lowerLeft, rowMid + 1, down, left, right);
-            } else if(left >= (colMid + 1)) {
-                return sumRangeSegmentTree(root.upperRight, up, rowMid, left, right) + sumRangeSegmentTree(root.lowerRight, rowMid + 1, down, left, right);
-            }
-        }
-        return sumRangeSegmentTree(root.upperLeft, up, rowMid, left, colMid) + sumRangeSegmentTree(root.upperRight, up, rowMid, colMid + 1, right) + sumRangeSegmentTree(root.lowerLeft, rowMid + 1, down, left, colMid) + sumRangeSegmentTree(root.lowerRight, rowMid + 1, down, colMid + 1, right);
-    }
-}
-```
-
+query(): t == top && l == left && b == bottom && r == right
 
 炸炸 java
 ```
@@ -362,4 +227,147 @@ class NumMatrix {
  * obj.update(row,col,val);
  * int param_2 = obj.sumRegion(row1,col1,row2,col2);
  */
+```
+
+
+题解 java
+```
+class NumMatrix {
+    private static SegmentTreeNode root;
+    private static int[][] matrix;
+
+    private class SegmentTreeNode {
+        int up;
+        int down;
+        int left;
+        int right;
+        int sum;
+        SegmentTreeNode upperLeft;
+        SegmentTreeNode upperRight;
+        SegmentTreeNode lowerLeft;
+        SegmentTreeNode lowerRight;
+
+        public SegmentTreeNode(int up, int down, int left, int right, int sum) {
+            this.up = up;
+            this.down = down;
+            this.left = left;
+            this.right = right;
+            this.sum = sum;
+            this.upperLeft = null;
+            this.upperRight = null;
+            this.lowerLeft = null;
+            this.lowerRight = null;
+        }
+    }
+
+    public NumMatrix(int[][] matrix) {
+        this.matrix = matrix;
+        if(matrix.length > 0 && matrix[0].length > 0) {
+            int M = matrix.length, N = matrix[0].length;
+            int[][] prefixSum = new int[M + 1][N + 1];
+            for(int i = 1; i <= M; i++) {
+                for(int j = 1; j <= N; j++) {
+                    prefixSum[i][j] = prefixSum[i - 1][j] + prefixSum[i][j - 1] - prefixSum[i - 1][j - 1] + matrix[i - 1][j - 1];
+                }
+            }
+            this.root = createSegmentTree(prefixSum, 0, (M - 1), 0, (N - 1));
+        }
+    }
+
+    private SegmentTreeNode createSegmentTree(int[][] prefixSum, int up, int down, int left, int right) {
+        if(up > down || left > right) {
+            return null;
+        }
+        int sum = prefixSum[down + 1][right + 1] - prefixSum[up][right + 1] - prefixSum[down + 1][left] + prefixSum[up][left];
+        SegmentTreeNode root = new SegmentTreeNode(up, down, left, right, sum);
+        if(up == down && left == right) {
+            return root;
+        }
+        int rowMid = (up + ((down - up) / 2));
+        int colMid = (left + ((right - left) / 2));
+        root.upperLeft = createSegmentTree(prefixSum, up, rowMid, left, colMid);
+        root.upperRight = createSegmentTree(prefixSum, up, rowMid, colMid + 1, right);
+        root.lowerLeft = createSegmentTree(prefixSum, rowMid + 1, down, left, colMid);
+        root.lowerRight = createSegmentTree(prefixSum, rowMid + 1, down, colMid + 1, right);
+        return root;
+    }
+
+    public void update(int row, int col, int val) {
+        int diff = val - matrix[row][col];
+        matrix[row][col] = val;
+        updateSegmentTree(root, row, col, diff);
+    }
+
+    private void updateSegmentTree(SegmentTreeNode root, int row, int col, int diff) {
+        if(root == null) {
+            return;
+        }
+        if(root.up > row || root.down < row || root.left > col || root.right < col) {
+            return;
+        }
+        root.sum += diff;
+        if(root.up == root.down && root.left == root.right) {
+            return;
+        }
+        int rowMid = (root.up + ((root.down - root.up) / 2));
+        int colMid = (root.left + ((root.right - root.left) / 2));
+        if(row <= rowMid) {
+            if(col <= colMid) {
+                updateSegmentTree(root.upperLeft, row, col, diff);
+            } else {
+                updateSegmentTree(root.upperRight, row, col, diff);
+            }
+        }
+        if(col <= colMid) {
+            updateSegmentTree(root.lowerLeft, row, col, diff);
+        } else {
+            updateSegmentTree(root.lowerRight, row, col, diff);
+        }
+    }
+
+    public int sumRegion(int row1, int col1, int row2, int col2) {
+        if(matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+        return sumRangeSegmentTree(root, row1, row2, col1, col2);
+    }
+
+    private int sumRangeSegmentTree(SegmentTreeNode root, int up, int down, int left, int right) {
+        if(root == null) {
+            return 0;
+        }
+        if(root.up > down || root.down < up || root.left > right || root.right < left) {
+            return 0;
+        }
+        if(root.up == up && root.down == down && root.left == left && root.right == right) {
+            return root.sum;
+        }
+        int rowMid = (root.up + ((root.down - root.up) / 2));
+        int colMid = (root.left + ((root.right - root.left) / 2));
+        if(down <= rowMid) {
+            if(right <= colMid) {
+                return sumRangeSegmentTree(root.upperLeft, up, down, left, right);
+            } else if(left >= (colMid + 1)) {
+                return sumRangeSegmentTree(root.upperRight, up, down, left, right);
+            } else {
+                return sumRangeSegmentTree(root.upperLeft, up, down, left, colMid) + sumRangeSegmentTree(root.upperRight, up, down, colMid + 1, right);
+            }
+        } else if(up >= (rowMid + 1)) {
+            if(right <= colMid) {
+                return sumRangeSegmentTree(root.lowerLeft, up, down, left, right);
+            } else if(left >= (colMid + 1)) {
+                return sumRangeSegmentTree(root.lowerRight, up, down, left, right);
+            } else {
+                return sumRangeSegmentTree(root.lowerLeft, up, down, left, colMid) + sumRangeSegmentTree(root.lowerRight, up, down, colMid + 1, right);
+            }
+        } else {
+            if(right <= colMid) {
+                return sumRangeSegmentTree(root.upperLeft, up, rowMid, left, right) + sumRangeSegmentTree(root.lowerLeft, rowMid + 1, down, left, right);
+            } else if(left >= (colMid + 1)) {
+                return sumRangeSegmentTree(root.upperRight, up, rowMid, left, right) + sumRangeSegmentTree(root.lowerRight, rowMid + 1, down, left, right);
+            }
+        }
+        return sumRangeSegmentTree(root.upperLeft, up, rowMid, left, colMid) + sumRangeSegmentTree(root.upperRight, up, rowMid, colMid + 1, right) + sumRangeSegmentTree(root.lowerLeft, rowMid + 1, down, left, colMid) + sumRangeSegmentTree(root.lowerRight, rowMid + 1, down, colMid + 1, right);
+    }
+}
 ```
