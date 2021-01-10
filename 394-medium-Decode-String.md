@@ -1,6 +1,55 @@
 # 字符串编码
 
 ## 字符串处理
+时隔一年的击败百分百解法：
+```
+class Solution {
+public:
+    string decodeString(string s) {
+        int n = s.size();
+        if (n == 0) return "";
+        string res = "";
+        int i = 0;
+        while (i < n) {
+            while (i < n && s[i] >= 'a' && s[i] <= 'z') {
+                res += s[i];
+                ++i;
+            } // leading to two possibilities: 1.i>=n 2.isdigit
+            if (i >= n) break;
+            int start = i, end = s.find('[', i);
+            // int cnt = stoi(s.substr(start, end-start)); // 使用stoi()函数可以过，但是时间击败从百分百变成百分之11，大大的延迟
+            int cnt = 0;
+            for (int j = start; j < end; ++j) {
+                cnt = cnt * 10 + s[j] - '0';
+            }
+            start = end + 1; // jump over [
+            int startnum = 1;  // PV操作 records num of [ s
+            for(end = start; end < n; ++end) {
+                if (s[end] == ']' && startnum == 1) {
+                    break;
+                }
+                else if (s[end] == '['){
+                    ++ startnum;
+                }
+                else if (s[end] == ']'){
+                    -- startnum;
+                }
+            }
+            string sstr = s.substr(start, end - start);
+            string ss = decodeString(sstr);
+            for (int j = 0; j < cnt; ++ j) {
+                res += ss;
+            }
+            i = end + 1; // jump over ]
+        }
+        return res;
+    }
+};
+```
+Runtime: 0 ms, faster than 100.00% of C++ online submissions for Decode String.
+
+Memory Usage: 6.6 MB, less than 97.03% of C++ online submissions for Decode String.
+
 
 C++ code
 ```
