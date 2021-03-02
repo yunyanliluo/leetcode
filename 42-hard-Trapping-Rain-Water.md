@@ -2,6 +2,80 @@
 
 https://leetcode-cn.com/problems/trapping-rain-water/
 
+## 第二次做这道题，第一反应还是用栈，这一次成功做出来了
+单调栈
+
+一些bad case：
+
+- 输入：
+[6,4,2,0,3,2,0,3,1,4,5,3,2,7,5,3,0,1,2,1,3,4,6,8,1,3]
+
+输出：
+77
+
+预期：
+83
+
+```
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        stack<int> hts;
+        unordered_map<int, int> counts;
+        int res = 0;
+        for(int ht: height) {
+            if (hts.empty() || hts.top() > ht) {
+                hts.push(ht);
+            } else if (hts.top() == ht){
+                if (counts.find(ht) != counts.end()) counts[ht]++;
+                else counts[ht] = 2;
+            } else {
+                int num = 0;
+                int temp = 0;
+                int sum = 0;
+                int last = 0;
+                while (!hts.empty() && hts.top() < ht) {
+                    int cnt = 1;
+                    if (counts.find(hts.top()) != counts.end())
+                        cnt = counts[hts.top()];
+                    num += cnt;
+                    temp += hts.top() * cnt;
+                    last = hts.top();
+                    if (counts.find(hts.top()) != counts.end())
+                        counts.erase(hts.top());
+                    hts.pop();
+                }
+                if (hts.empty()) {
+                    sum = last * num - temp;
+                    hts.push(ht);
+                } else {
+                    sum = ht * num - temp;
+                    // 以下四行是fix的地方.因为永远是单调栈，所以corner case在于新的插入数和栈顶相等。
+                    if (counts.find(ht) != counts.end())  counts[ht] += (num + 1);
+                    else counts[ht] = num + 1;
+                    if (hts.top() != ht) hts.push(ht);
+                    else if (counts[ht] == num + 1)  counts[ht]++;
+                }
+                res += sum;
+            }
+        }
+        return res;
+    }
+};
+```
+执行用时：
+8 ms
+, 在所有 C++ 提交中击败了
+80.92%
+的用户
+
+内存消耗：
+14.5 MB
+, 在所有 C++ 提交中击败了
+15.09%
+的用户
+
+
 ## Dp
 
 每一列装水的高度，取决于左右两侧最高高度
