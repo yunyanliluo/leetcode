@@ -160,6 +160,57 @@ public:
 28.89%
 的用户
 
+## 递归
+```
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int recursive(TreeNode* curr, TreeNode* p, TreeNode* q, TreeNode*& res) {
+        if (curr == NULL) return 0;
+        if (curr == p || curr == q) {
+            if (recursive(curr->left, p, q, res) == 1 || recursive(curr->right, p, q, res) == 1) {
+                res = curr;
+                return 2;
+            } else {
+                return 1;
+            }
+        } else {
+            int left = 0, right = 0;
+            left = recursive(curr->left, p, q, res);
+            right = recursive(curr->right, p, q, res);
+            if (left == 1 && right == 1) {
+                res = curr;
+            }
+            return left + right;
+        }
+    }
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        TreeNode* res = NULL;
+        recursive(root, p, q, res);
+        return res;
+    }
+};
+```
+执行用时：
+16 ms
+, 在所有 C++ 提交中击败了
+89.92%
+的用户
+
+内存消耗：
+14.1 MB
+, 在所有 C++ 提交中击败了
+30.55%
+的用户
+
 ## 暴力
 
 C++ code
