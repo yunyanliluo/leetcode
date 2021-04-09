@@ -1,22 +1,30 @@
-Maximal Square
+# Maximal Square
 最大正方形
 在一个由 0 和 1 组成的二维矩阵内，找到只包含 1 的最大正方形，并返回其面积。
 
-#solutions
-#dp - 使用二维数组
-#时间复杂度O（mn），空间复杂度O（mn）
+# solutions
+## dp - 使用二维数组
+时间复杂度O（mn），空间复杂度O（mn）
+
 链接：https://leetcode-cn.com/problems/maximal-square/solution/zui-da-zheng-fang-xing-by-leetcode/
+
 dp(i,j) 表示的是由 1 组成的最大正方形的边长；
+
 从 (0,0) 开始，对原始矩阵中的每一个 1，我们将当前元素的值更新为
 dp(i, j)=min(dp(i−1, j), dp(i−1, j−1), dp(i, j−1))+1
+
 我们还用一个变量记录当前出现的最大边长，这样遍历一次找到最大的正方形边长 maxsqlenmaxsqlen，那么结果就是 maxsqlen^2。
 
-#dp - 只使用一维数组
-#时间复杂度O（mn），空间复杂度O（n）
+## dp - 只使用一维数组
+时间复杂度O（mn），空间复杂度O（n）
+
 链接：https://leetcode-cn.com/problems/maximal-square/solution/zui-da-zheng-fang-xing-by-leetcode/
+
 在前面的动态规划解法中，计算 i th  行（row）的 dp 方法中，我们只使用了上一个元素和第 (i−1) th行，因此我们不需要二维 dp 矩阵，因为一维 dp 足以满足。
 我们扫描一行原始矩阵元素时，我们根据公式：dp[j]=min(dp[j−1],dp[j],prev) 更新数组 dp,其中 prev 指的是 dp[j-1]。对于每一行，我们重复相同过程并在 dp 矩阵中更新元素。
-#my C++ code
+
+my C++ code
+```
 class Solution {
 public:
     int maximalSquare(vector<vector<char>>& matrix) {
@@ -45,11 +53,14 @@ public:
         return maxsqlen*maxsqlen;
     }
 };
+```
 执行用时 :20 ms, 在所有 C++ 提交中击败了87.45%的用户
+
 内存消耗 :10.4 MB, 在所有 C++ 提交中击败了99.17%的用户
 
-#dp - 不使用额外的dp数组，只在原数组上修改
-#时间复杂度O（mn），空间复杂度O（1）
+## dp - 不使用额外的dp数组，只在原数组上修改
+时间复杂度O（mn），空间复杂度O（1）
+```
 class Solution {
 public:
     int maximalSquare(vector<vector<char>>& matrix) {
@@ -66,6 +77,8 @@ public:
         return maxsqlen*maxsqlen;
     }
 };
+```
 执行用时 :20 ms, 在所有 C++ 提交中击败了87.45%的用户
+
 内存消耗 :10.4 MB, 在所有 C++ 提交中击败了99.72%的用户
 
