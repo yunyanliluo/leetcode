@@ -87,7 +87,7 @@ dp[i][j] = dp[i-1][j] //in this case, a* counts as multiple/single a
 or dp[i][j] = dp[i][j-2] // in this case, a* counts as empty
 
 C++ code
-```
+```C++
 class Solution {
 public:
     bool isMatch(string s, string p) {
