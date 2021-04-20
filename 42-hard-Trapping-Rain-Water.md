@@ -2,6 +2,17 @@
 
 https://leetcode-cn.com/problems/trapping-rain-water/
 
+## 第三次做，觉得dp最合理
+但是不会做，学了dp，双指针和栈的做法
+
+双指针
+
+badcases:
+1. [2,0,2] 左右两次，将左右等高的容水量计算重复
+```C++
+
+```
+
 ## 第二次做这道题，第一反应还是用栈，这一次成功做出来了
 单调栈
 
@@ -188,8 +199,57 @@ public:
 
 参考：https://leetcode-cn.com/problems/trapping-rain-water/solution/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by-w-8/
 
-Java code
+```C++
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        int n = height.size();
+        if (n < 3) return 0;
+        int sum = 0;
+        int maxleft = height[0], maxright = height[n - 1];
+        int i = 0, j = n - 1;
+        while (i < j) {
+            if (maxleft <= maxright) {
+                int start = i;
+                ++i;
+                int adds = 0;
+                while (i < j && height[i] < maxleft) {
+                    adds += height[i];
+                    ++i;
+                }
+                sum += maxleft * (i - start - 1) - adds;
+                maxleft = height[i];
+            } else {
+                int start = j;
+                --j;
+                int adds = 0;
+                while (i < j && height[j] < maxright) {
+                    adds += height[j];
+                    --j;
+                }
+                sum += maxright * (start - j - 1) - adds;
+                maxright = height[j];
+            }
+        }
+        return sum;
+    }
+};
 ```
+执行用时：
+4 ms
+, 在所有 C++ 提交中击败了
+93.96%
+的用户
+
+内存消耗：
+13.7 MB
+, 在所有 C++ 提交中击败了
+86.45%
+的用户
+
+
+Java code
+```Java
 public int trap(int[] height) {
     int sum = 0;
     int max_left = 0;
