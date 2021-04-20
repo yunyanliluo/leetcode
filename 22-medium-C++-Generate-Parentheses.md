@@ -98,6 +98,30 @@ public:
 
 ### 回溯法
 
+```C++
+class Solution {
+public:
+    void helper(int open, int close, string prefix, vector<string>& res) {
+        if (open == 0 && close == 0) {
+            res.push_back(prefix);
+            return;
+        }
+        if (open < close) {
+            helper(open, close - 1, prefix + ")", res);
+        }
+        if (open > 0) helper(open - 1, close, prefix + "(", res);
+        return;
+    }
+    vector<string> generateParenthesis(int n) {
+        if (n == 0) return {};
+        vector<string> res;
+        helper(n, n, "", res);
+        return res;
+    }
+};
+```
+
+
 Java code from: https://leetcode-cn.com/problems/generate-parentheses/solution/gua-hao-sheng-cheng-by-leetcode/
 
 我们可以通过跟踪到目前为止放置的左括号和右括号的数目来做到这一点，
