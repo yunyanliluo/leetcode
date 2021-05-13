@@ -163,7 +163,6 @@ public:
         if (p->word) {
             p->word = false; // 其他方向就不会再把答案放进去了
             res.push_back(p->str);
-            return;
         } 
         if (x < 0 || x == board.size() || y < 0 || y == board[x].size()) return;
         if (p->words.find(board[x][y]) == p->words.end()) return;
@@ -193,12 +192,18 @@ public:
         
     }
 };
-
-作者：dsadsads
-链接：https://leetcode-cn.com/problems/word-search-ii/solution/cqian-zhui-shu-ju-ta-ma-rong-yi-dong-by-chashao/
-来源：力扣（LeetCode）
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
+执行用时：
+672 ms
+, 在所有 C++ 提交中击败了
+18.22%
+的用户
+
+内存消耗：
+8.9 MB
+, 在所有 C++ 提交中击败了
+49.93%
+的用户
 
 ###这是一份十分精致的字典树/前缀树/trie模板
 ```
