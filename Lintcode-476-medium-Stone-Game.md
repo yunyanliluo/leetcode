@@ -2,6 +2,9 @@
 
 ## dp
 从最小长度的ij开始做dp，因为长的ij肯定能从比他小的段计算出来
+
+注意：如果用min，不要忘记初始值INT_MAX!!!
+
 ```C++
 class Solution {
 public:
