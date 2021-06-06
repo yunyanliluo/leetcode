@@ -56,3 +56,9 @@ public:
     }
 };
 ```
+
+## 二分法 - nums[mid]跟nums[0]比较作为分支判断条件
+
+相同的while (end - start > 1)
+
+最后return min(nums[start], nums[end], nums[0])
