@@ -77,13 +77,13 @@ public:
         for (int i = 1; i <= N; ++i) {
             pref[i] = pref[i-1] + stones[i-1];
         }
-        vector<int> temp(N, 0);
+        vector<int> temp(N, 0); // 这里初始值一定为0！因为<K的不能合并的区间就应该是0
         vector<vector<int>> dp(N, temp);
         for (int i = 0; i < N; ++i) {
             dp[i][i] = 0;
         }
         for (int r = 0; r < N; ++r) {
-            for (int l = r - K + 1; l >= 0; --l) {
+            for (int l = r - K + 1; l >= 0; --l) { //l跳过的部分，区间长度<K，不能合并，应该就是初始值0，不用再计算了
                 int max = INT_MAX;
                 for (int p = l; p < r; p += (K-1)) {
                     max = min(max, dp[l][p] + dp[p+1][r]);
