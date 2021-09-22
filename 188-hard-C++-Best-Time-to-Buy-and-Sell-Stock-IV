@@ -19,6 +19,43 @@ Best Time to Buy and Sell Stock IV
 链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 
+## Lintcode 393 my answer
+用hold[i][k],sold[i][k]分别表示第i天是持有状态、空仓状态，并且已经完成了k笔交易。在此我设定交易数以卖出股票数为准。
+那么我最多买入k次，最多卖出k次，hold的k范围：0～k-1，sold的k范围：1～k
+WA1:sold的k范围写错了
+```C++
+            for (int k = 0; k <= s_max; ++k) { // 这里写成了k=0开始，应该是k=1开始！k=0开始，下面有下标k-1越界！
+                sold[i%2][k] = hold[(i-1)%2][k-1] + prices[i];
+                if (k <= i/2) {
+                    sold[i%2][k] = max(sold[(i-1)%2][k], sold[i%2][k]);
+                }
+            }
+```
+Memory LE：发现递推方程里i只依赖i-1，因此优化成滚动数组
+```C++
+            for (int k = 0; k < h_max; ++k) {
+                hold[i%2][k] = sold[(i-1)%2][k] - prices[i];
+                if (k < (i+1)/2) {
+                    hold[i%2][k] = max(hold[i%2][k], hold[(i-1)%2][k]);
+                }
+            }
+            for (int k = 1; k <= s_max; ++k) {
+                sold[i%2][k] = hold[(i-1)%2][k-1] + prices[i];
+                if (k <= i/2) {
+                    sold[i%2][k] = max(sold[(i-1)%2][k], sold[i%2][k]);
+                }
+            }
+```
+Memory LE：发现还是MLE的原因是K=10^8，超内存了，于是考虑K非常大但是占用不必要空间的情况，优化K的范围
+```C++
+            int K_new = min(K, n / 2);
+            vector<int> temp(K_new+1, 0);
+            vector<vector<int>> hold(2, temp);
+            vector<vector<int>> sold(2, temp);
+```
+Time LE：发现K=10^8这个testcase时间超了
+但我没有办法了 我不改了
+
 #my answer
 #dp
 更新了底下链接的详解的方法，将空间O(N*2*k)优化为了O(2*k)
